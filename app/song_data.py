@@ -29,11 +29,15 @@ def getid3(filename):
 #Grabs location of audio file
 def music_directory(directory):
     songlist = []
-    print("Before Loop <------", songlist)
     for song in os.listdir(directory):
         path = os.path.join(directory,song)
         songlist.append(getid3(path))
         return songlist
 
+def find_tags(tag):
+    for id in music_directory(directory):
+        musictag = id[tag]
+        return musictag
 
-print(songlist["artist"])
+
+print(find_tags('artist'))
