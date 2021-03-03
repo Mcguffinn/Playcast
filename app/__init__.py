@@ -1,18 +1,27 @@
+
 from flask import Flask, render_template, Response
 import logging
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-from tagger import Tagger
 
 
 app = Flask(__name__)
+app.secret_key = "music"
 app.config['TESTING'] = True
 
 root = logging.getLogger()
 root.setLevel(logging.DEBUG)
 
-from app import routes
+
+@app.route('/')
+def show_music():
+    general_data = {
+        'title': 'Music Player'
+    }
+    stream_entries = return_music_dict()
+    return render_template('design.html', entries=stream_entries, **general_data)
+
 
 if __name__ == "__main__":
     port = 5000
