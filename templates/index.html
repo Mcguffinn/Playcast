@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ Player }}</title>
+</head>
+<body>
+    <div>
+        <h3>Playlist:</h3>
+    </div>
+
+    <div>
+        {% for entry in entries %}
+        <div>
+            <h4>{{entry.name}}</h4>
+            <div>
+                <h4>Genre:</h4>
+                <b>{{entry.genre}}</b>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="pull-right">
+                <audio controls>
+                    <source src="http://localhost:5000/{{ entry.id }}" type="audio/mp3">
+                </audio>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>

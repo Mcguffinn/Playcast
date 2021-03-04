@@ -10,7 +10,7 @@ API_KEY = '76e2d6fda82f6c2377d2bc5728e8aa8d'
 API_SECRET = '540fd48e6f06d8306016d6d592b160a8'
 
 network = pylast.LastFMNetwork(api_key=API_KEY, api_secret=API_SECRET)
-directory = r"C:\Users\Axel\Documents\GitHub\musicaly\test-files"
+directory = r"F:/Music"
 songlist = os.listdir(directory)
 path = str
 
@@ -31,23 +31,32 @@ class Tagger:
     # Grabs location of audio file
     def music_directory(self, directory):
         songlist = []
+        id_counter = 0
         for song in os.listdir(directory):
-            path = os.path.join(directory, song)
-            songlist.append(self.getid3(path))
-            return songlist
+            if song.endswith('.mp3') and id_counter <= len(songlist):
+                id_counter += 1
+                path = os.path.join(directory, song)
+                # songlist.append({ 'id' : id_counter, 'name' : song.replace('.mp3',''), 'link' : r'F:/Music/' + song })
+                songlist.append(self.getid3(path))
+        return (songlist)
 
     # Function used to query the data of the song, find artists, genre etc....
     def find_tags(self, tag):
         for id in self.music_directory(directory):
+            if id[tag] is None:
+                pass
             musictag = id[tag]
-            return (print(id), musictag)
+            yield(musictag)
 
     def grab_all_tags(self):
         for tags in self.music_directory(directory):
             album = tags.keys()
-            return album
+        return album
 
 
 tag = Tagger()
+tag.music_directory(directory=directory)
+# print(tag.find_tags('genre'))
 
-print(tag.grab_all_tags())
+for songs in tag.find_tags('artist'):
+    print(songs)
