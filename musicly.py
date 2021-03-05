@@ -15,6 +15,7 @@ app.config['TESTING'] = True
 root = logging.getLogger()
 root.setLevel(logging.DEBUG)
 
+songsname = tagger.Tagger()
 
 def return_music_dict():
     d = []
@@ -32,16 +33,14 @@ def show_music():
         'title': 'Music Player'
     }
     stream_entries = return_music_dict()
-    songsname = tagger.Tagger()
-    songsname.music_directory(directory=r'F:/Music')
+    # songsname.music_directory(directory = r"F:/Music")
     # tagger.Tagger.music_directory(directory=r'F:/Music')
-    print(songsname.music_directory(directory=r'F:/Music'))
-    return render_template('index.html', entries=stream_entries, **general_data)
+    return render_template('index.html', entries=songsname.music_directory(), **general_data)
 
 @app.route('/<int:stream_id>')
 def streamer(stream_id):
     def generate():
-        data = return_music_dict()
+        data = songsname.music_directory()
         count = 1
         song = types.SimpleNamespace()
         for item in data:
