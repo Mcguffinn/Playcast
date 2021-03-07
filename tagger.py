@@ -2,12 +2,15 @@ import requests
 import json
 import os
 import mutagen
+from icecream import ic as debug
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
+from dataclasses import dataclass
+from typing import List
 import pylast
 
-API_KEY = '76e2d6fda82f6c2377d2bc5728e8aa8d'
-API_SECRET = '540fd48e6f06d8306016d6d592b160a8'
+API_KEY = "76e2d6fda82f6c2377d2bc5728e8aa8d"
+API_SECRET = "540fd48e6f06d8306016d6d592b160a8"
 
 network = pylast.LastFMNetwork(api_key=API_KEY, api_secret=API_SECRET)
 directory = r"F:/Music"
@@ -16,12 +19,22 @@ song_tags = []
 path = str
 
 
-# Testing ID3
-# for song in songlist:
-#     if song.endswith("mp3"):
-#         path = os.path.join(directory,song)
-#         keys = EasyID3(path)
-# print(keys["artist"])
+def pop(mylist):
+    try:
+        return mylist.pop()
+    except IndexError:
+        return None
+
+
+@dataclass
+class MySong:
+    album: str
+    title: str
+    artist: str
+    link: str
+    genre: str = ""
+    songid: int = 0
+
 
 class LastFm:
     pass
@@ -32,33 +45,30 @@ class Tagger:
     def getid3(self, filename):
         return EasyID3(filename)
 
-    # Grabs location of audio file
-    def music_directory(self):
-        id_counter = 0
-        for song in os.listdir(directory):
-            if song.endswith('.mp3') and id_counter <= len(songlist):
-                id_counter += 1
-                path = os.path.join(directory, song)
-                songlist.append({ 'id' : id_counter, 'name' : song.replace('.mp3',''), 'link' : r'F:/Music/' + song })
-                song_tags.append(self.getid3(path))
-                # songlist.append(self.getid3(path))
-        return (song_tags)
+    def scan(self):
+        for song_file in os.listdir(directory):
+            if not song_file.endswith(".mp3"):
+                continue
+            link = os.path.join(directory, song_file)
+            data = self.getid3(link)
+            MySong.songid += 1
+            try:
+                song = MySong(
+                    album=pop(data["album"]),
+                    title=pop(data["title"]),
+                    artist=pop(data["artist"]),
+                    genre=pop(data["genre"]),
+                    link=link,
+                    songid=MySong.songid,
+                )
 
-    # Function used to query the data of the song, find artists, genre etc....
-    def find_tags(self, tag):
-        self.music_directory()
-        for id in song_tags:
-            if id[tag] == 'TPE1':
-                pass
-            musictag = id[tag]
-            print(musictag)
+            except KeyError:
+                continue
 
-    def grab_all_tags(self):
-        for tags in self.music_directory():
-            tags
-        return tags
+            yield song
 
 
 tag = Tagger()
-tag.music_directory()
-print(song_tags)
+# tag.music_directory()
+# for song in tag.scan():
+#     print(f"song: {song.title}, {song.genre}, {song.artist}, {song.songid}")

@@ -13,7 +13,7 @@
     <div>
         {% for entry in entries %}
         <div>
-            <h4>{{entry.name}}</h4>
+            <h4>{{entry.artist}}</h4>
             <div>
                 <h4>Genre:</h4>
                 <b>{{entry.genre}}</b>
@@ -22,7 +22,7 @@
         <div class="col-md-3">
             <div class="pull-right">
                 <audio controls>
-                    <source src="http://localhost:5000/{{ entry.id }}" type="audio/mp3">
+                    <source src="http://localhost:5000/{{ entry.songid }}" type="audio/mp3">
                 </audio>
             </div>
         </div>

@@ -7,8 +7,6 @@
 # from tornado.ioloop import IOLoop
 
 
-
-
 # def return_music_dict():
 #     d = []
 #     id_counter = 0
@@ -27,5 +25,3 @@
 #     }
 #     stream_entries = return_music_dict()
 #     return render_template('index.html', entries=stream_entries, **general_data)
-
-
