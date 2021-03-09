@@ -56,21 +56,20 @@ def show_music():
 
 @app.route("/<int:stream_id>")
 def streamer(stream_id):
-    song = mysong
+    global mysong # not required, but way of explicity referencing global
+    # stop iterating through everything to get to 1 thing, you have dictionary
+    song = mysong[stream_id]
 
     def generate():
         count = 1
-
-        for link, track in song.items():
-
-            if track.songid == stream_id:
-                with open(track.link, "rb") as fwav:
-                    data = fwav.read(1024)
-                    while data:
-                        yield data
-                        data = fwav.read(1024)
-                        count += 1
-                        logging.debug("Music data cluster : " + str(count))
+        
+        with open(song.link, "rb") as fwav:
+            data = fwav.read(1024)
+            while data:
+                yield data
+                data = fwav.read(1024)
+                count += 1
+                logging.debug("Music data cluster : " + str(count))
 
     return Response(generate(), mimetype="audio/mp3")
 
