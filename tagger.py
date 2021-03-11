@@ -2,6 +2,7 @@ import requests
 import json
 import os
 import mutagen
+from hasher import hashsong
 from icecream import ic as debug
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
@@ -32,8 +33,8 @@ class MySong:
     title: str
     artist: str
     link: str
+    songid: str
     genre: str = ""
-    songid: int = 0
 
 
 class LastFm:
@@ -51,7 +52,7 @@ class Tagger:
                 continue
             link = os.path.join(directory, song_file)
             data = self.getid3(link)
-            MySong.songid += 1
+            # MySong.songid += 1
             try:
                 song = MySong(
                     album=pop(data["album"]),
@@ -59,9 +60,9 @@ class Tagger:
                     artist=pop(data["artist"]),
                     genre=pop(data["genre"]),
                     link=link,
-                    songid=MySong.songid,
+                    songid="",
                 )
-
+                song.songid = hashsong(song).digest().hex()
             except KeyError:
                 continue
 

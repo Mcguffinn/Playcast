@@ -3,7 +3,8 @@ import logging
 import json
 import types
 import tagger
-import hashlib
+from hasher import hashsong
+from icecream import ic as debug
 from flask import Flask, render_template, Response
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
@@ -21,48 +22,34 @@ songsname = tagger.Tagger()
 
 def loadsong():
     x = {}
-    for song in tagger.Tagger().scan():
-        m = hashlib.sha256()
-        m.update(song.link.encode("utf-8"))
-        x[m.digest()] = song
+    for song in songsname.scan():
+        m = hashsong(song)
+        x[m.digest().hex()] = song
     return x
 
 
 mysong = loadsong()
-
-
-def return_music_dict():
-    d = []
-    id_counter = 0
-    for filename in os.listdir(r"F:/Music"):
-        if filename.endswith(".mp3") and id_counter <= len(d):
-            id_counter += 1
-            d.append(
-                {
-                    "id": id_counter,
-                    "name": filename.replace(".mp3", ""),
-                    "link": r"F:/Music/" + filename,
-                }
-            )
-    return d
+# debug(mysong)
 
 
 @app.route("/")
 def show_music():
-    general_data = {"title": "Music Player"}
+    global stream_entries
     stream_entries = songsname.scan()
+    general_data = {"title": "Music Player"}
     return render_template("index.html", entries=stream_entries, **general_data)
 
 
-@app.route("/<int:stream_id>")
+@app.route("/<string:stream_id>")
 def streamer(stream_id):
-    global mysong # not required, but way of explicity referencing global
+    global mysong
+    # not required, but way of explicity referencing global
     # stop iterating through everything to get to 1 thing, you have dictionary
+    # song = mysong.songid
     song = mysong[stream_id]
 
     def generate():
         count = 1
-        
         with open(song.link, "rb") as fwav:
             data = fwav.read(1024)
             while data:
