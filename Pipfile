@@ -4,8 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+flask*
+tornado*
+hashlib*
 
 [dev-packages]
+flask*
+tornado*
+hashlib*
 
 [requires]
 python_version = "3.8"

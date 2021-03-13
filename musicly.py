@@ -4,6 +4,7 @@ import json
 import types
 import tagger
 from hasher import hashsong
+from laststuff import getartistinfo
 from icecream import ic as debug
 from flask import Flask, render_template, Response
 from tornado.wsgi import WSGIContainer
@@ -59,6 +60,15 @@ def streamer(stream_id):
                 logging.debug("Music data cluster : " + str(count))
 
     return Response(generate(), mimetype="audio/mp3")
+
+
+@app.route("/get_info/string:artist_id")
+def last_fm(artist_id):
+    global mysong
+    artist = mysong[artist_id]
+    artistinfo = getartistinfo(artist)
+    bio = request.get_json(artist.get_bio_content(language="en"))
+    return bio
 
 
 if __name__ == "__main__":

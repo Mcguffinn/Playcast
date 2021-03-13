@@ -13,7 +13,20 @@
     <div>
         {% for entry in entries %}
         <div>
-            <h4>{{entry.artist}}</h4>
+            <a href="/get_info\{{entry.artist}}">
+                <h4>{{entry.artist}}</h4>
+                {% with messages = get_flashed_messages(with_categories = true) %}
+                        {% if messages %}
+                            <ul class=flashes></ul>
+                                {% for catagory, message in messages %}
+                                    {% if category == 'songinfo' + stream_id %}
+                                        {{message}}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                {% endwith %}
+            </a>
             <h4>{{entry.title}}</h4>
             <div>
                 <h4>Genre:</h4>
