@@ -41,12 +41,19 @@ def show_music():
     return render_template("index.html", entries=stream_entries, **general_data)
 
 
+def get_user_latlng():
+    # hostName = socket.gethostname()
+    # userIp = socket.gethostbyname(hostname)
+    ip = request.remote_addr
+    userIp = geocoder.ip("me")  # <--- this works but userip doesnt?!
+    userLocation = userIp.latlng
+    print(ip)
+    return userLocation
+
+
 @app.route("/<string:stream_id>")
 def streamer(stream_id):
     global mysong
-    # not required, but way of explicity referencing global
-    # stop iterating through everything to get to 1 thing, you have dictionary
-    # song = mysong.songid
     song = mysong[stream_id]
 
     def generate():

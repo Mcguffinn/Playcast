@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block head %}
+
+<title>{{ Player }}</title>
+
+{% endblock %}
+{% block body %}
+
+    <div>
+        The Weather:
+        
+        <ul>
+            {% for entry in entries%}
+                <li>{{entry}}</li>
+            {% endfor %}
+        </ul>
+        
+    </div>
+{% endblock %}

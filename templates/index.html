@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% block head %}
 
-<head>
-    <meta charset="utf-8">
-    <title>{{ Player }}</title>
-</head>
-<body>
+<title>{{ Player }}</title>
+
+{% endblock %}
+{% block body %}
     <div>
         <h3>Playlist:</h3>
     </div>
@@ -42,6 +41,4 @@
         </div>
         {% endfor %}
     </div>
-</body>
-
-</html>
+{% endblock %}
