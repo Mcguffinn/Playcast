@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block body %}
+    
+    <section class="container-fluid">
+        <div class="col">
+          <div class="row">        
+            <img src="{{ weatherSVG }}" class="rounded mx-auto d-block" height="300rem" width="300rem"/>
+          </div> 
+          <div class="row">        
+            {% for row in playlistData %}
+              <tr>
+                <td><h2 class="display-3" id="playlist-name">{{row['name']}}</h2></td>
+                <td><img src="{{row['image']}}" id="playlist-image" height="40%" width="40%"/></td>                        
+              </tr>
+            {% endfor %}
+          </div> 
+        </div>   
+    </section>
+
+{% endblock %}
+{% block script %}
+
+    <script>
+        let data = {};
+        // let debug = document.getElementById("debug").innerHTML;
+        // 
+        $('#click').click(function (){
+        $.ajax({
+          type: 'GET',
+          url:'/playlist/<query>',
+          success: function (response) {
+            data = {
+              image: response.image,
+              name: response.name,
+            }
+            console.log(data)
+          }
+        })
+      })
+        
+    </script>
+
+{% endblock %}
