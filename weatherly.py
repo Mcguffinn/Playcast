@@ -69,7 +69,7 @@ def playcast():
     playlist = get_playlist_data(get_weather_status()[1])
     weatherSVG = get_weather_status()[0]
     weatherStatus = get_weather_status()[1]
-    return render_template("playlist.html", playlistData = playlist, weatherSVG = weatherSVG, weatherStatus = weatherStatus)
+    return render_template("playlist.html", playlistData = playlist, weatherSVG = weatherSVG, weatherStatus = weatherStatus,)
 
 
 
