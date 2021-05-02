@@ -1,3 +1,10 @@
+.ebase {
+  padding: 0;
+  padding-top: 3rem;
+  /* color: linear-gradient(to left, #302d2d, #514457); */
+  background: linear-gradient(180deg, #302d2d, #514457);
+}
+
 .title {
   text-align: center;
 }

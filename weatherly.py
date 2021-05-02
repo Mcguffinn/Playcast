@@ -39,7 +39,7 @@ def get_weather_status():
         1102:["Mostly Cloudy",	"static\icons\mostly_cloudy.svg"],
         1101:["Partly Cloudy",	"static\icons\partly_cloudy_day.svg"],
         1100:["Mostly Clear",	"static\icons\mostly_clear_day.svg"],
-        1000:["Clear", "static\icons\clear_day.svg",],
+        1000:["Clear", "static\icons\clear_day.svg"],
     }
     key = get_user_weather()["data"]["timelines"][0]["intervals"][0]["values"]["weatherCode"]
     svg = weatherCodes[key][1]
@@ -61,15 +61,17 @@ def get_playlist_data(query):
     for items in data['playlists']["items"]:
         image = items["images"][0]["url"]
         name = items["name"]
-        playlistData.append({"image":image,"name": name})
+        description = items["description"]
+        playlistData.append({"image":image,"name": name, "description":description})
     return playlistData
 
 @app.route('/playcast')
 def playcast():
-    playlist = get_playlist_data(get_weather_status()[1])
-    weatherSVG = get_weather_status()[0]
-    weatherStatus = get_weather_status()[1]
-    return render_template("playlist.html", playlistData = playlist, weatherSVG = weatherSVG, weatherStatus = weatherStatus,)
+    weatherSVG = get_weather_status()
+    (print(weatherSVG))
+    playlist = get_playlist_data(weatherSVG[1])
+    # weatherStatus = get_weather_status()[1]
+    return render_template("playlist.html", playlistData = playlist, weatherSVG = weatherSVG[0], weatherStatus = weatherSVG[1],)
 
 
 

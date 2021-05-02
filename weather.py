@@ -14,7 +14,7 @@ load_dotenv()
 
 def get_user_latlng():
     # userLocation = userLocationData.state + userLocationData.city
-    userIp = geocoder.ip("http://freegeoip.net/json")  # <--- this works but userip doesnt?!
+    userIp = geocoder.ip("me")  # <--- this works but userip doesnt?!
     userLocation = userIp.latlng
     return userLocation
 
@@ -183,7 +183,7 @@ def get_user_weather():
             }
         ],
     }
-    return fakeload
+    return weather.json()
 
 
 # debug(get_user_weather())

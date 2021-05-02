@@ -3,35 +3,24 @@
     
     <section class="container-fluid">
       <div class="row">        
-        <img src="{{ weatherSVG }}" class="rounded mx-auto d-block" height="300rem" width="300rem"/>
+        <img src="{{ weatherSVG }}" class="rounded mx-auto d-block"/>
       </div> 
       {% for row in playlistData %}
-      <div class="accordion" id="accordionExample">
-          <h2 class="accordion-header" id="heading{{loop.index}}">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
-              <img src="{{row['image']}}" id="playlist-image" width="15%" height="auto"/>
-              {{row['name']}}
-            </button>
-          </h2>
-          <div id="collapse{{loop.index}}" class="accordion-collapse collapse hide" aria-labelledby="{{loop.index}}" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+        {% if row['description'] == '' %}{% else %}
+        <div class="accordion" id="accordionExample">
+            <h2 class="accordion-header" id="heading{{loop.index}}">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
+                <img src="{{row['image']}}" id="playlist-image" width="15%" height="auto"/>
+                {{row['name']}}
+              </button>
+            </h2>
+            <div id="collapse{{loop.index}}" class="accordion-collapse collapse hide" aria-labelledby="{{loop.index}}" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                  <p>{{row['description']}}</p>              
+              </div>
             </div>
-          </div>
-      </div>
-      <!-- <div class="accordion-item">
-
-        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" id="{{row['name']}}">
-          <img src="{{row['image']}}" id="playlist-image" width="80" height="120"/>
-          <h2 class="accordion-header display-5 ">{{row['name']}}</h2>
-        </button>
-
-        <div id="collapseOne" class="accordion-collapse collapse hidden" aria-labelledby="{{row['name']}}" data-bs-parent="#accordion">
-          <div class="accordion-body">
-            <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-          </div>
         </div>
-      </div> -->
+        {% endif %}
       {% endfor %}
     </section>
 
