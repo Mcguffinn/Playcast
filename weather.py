@@ -183,7 +183,9 @@ def get_user_weather():
             }
         ],
     }
-    return weather.json()
+    # return weather.json()
+
+    return fakeload
 
 
 # debug(get_user_weather())

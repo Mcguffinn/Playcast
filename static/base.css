@@ -1,11 +1,26 @@
 .ebase {
   padding: 0;
+  height: 100%;
   padding-top: 3rem;
-  /* color: linear-gradient(to left, #302d2d, #514457); */
-  background: linear-gradient(180deg, #302d2d, #514457);
+  background: hsla(0, 3%, 18%, 1);
+
+  background: linear-gradient(
+    0deg,
+    hsla(0, 3%, 18%, 1) 10%,
+    hsla(284, 61%, 39%, 1) 100%
+  );
+
+  background: -moz-linear-gradient(
+    -90deg,
+    hsla(0, 3%, 18%, 1) 10%,
+    hsla(284, 61%, 39%, 1) 100%
+  );
+
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#302D2D", endColorstr="#7F27A0", GradientType=1 );
 }
 
 .title {
+  color: rgb(29, 185, 84);
   text-align: center;
 }
 
@@ -15,4 +30,8 @@
 
 td img {
   height: auto;
+}
+
+.text-center {
+  color: antiquewhite;
 }
