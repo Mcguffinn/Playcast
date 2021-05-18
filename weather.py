@@ -183,12 +183,12 @@ def get_user_weather():
             }
         ],
     }
-    # return weather.json()
+    return weather.json()
 
-    return fakeload
+    # return fakeload
 
 
-# debug(get_user_weather())
+debug(get_user_weather())
 
 # def get_svg():
 #     currentWeather = get_user_weather()

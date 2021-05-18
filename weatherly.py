@@ -62,13 +62,13 @@ def get_playlist_data(query):
         image = items["images"][0]["url"]
         name = items["name"]
         description = items["description"]
-        playlistData.append({"image":image,"name": name, "description":description})
+        outurl = items["external_urls"]["spotify"]
+        playlistData.append({"image":image,"name": name, "description":description, "outurl": outurl})
     return playlistData
 
 @app.route('/playcast')
 def playcast():
     weatherSVG = get_weather_status()
-    (print(weatherSVG))
     playlist = get_playlist_data(weatherSVG[1])
     # weatherStatus = get_weather_status()[1]
     return render_template("playlist.html", playlistData = playlist, weatherSVG = weatherSVG[0], weatherStatus = weatherSVG[1],)
