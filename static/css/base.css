@@ -20,6 +20,7 @@
   text-align: center;
   color: antiquewhite;
   padding-bottom: 2rem;
+  padding-top: 2rem;
 }
 .song {
   color: rgb(29, 27, 29) !important;
@@ -96,4 +97,8 @@ ul li {
 
 .socials {
   padding: 2rem 2rem;
+}
+
+.container-fluid {
+  padding-bottom: 2rem;
 }

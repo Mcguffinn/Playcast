@@ -5,6 +5,7 @@ import os
 import logging
 import json
 import types
+from flask import request
 from datetime import datetime, timedelta
 from icecream import ic as debug
 from dotenv import load_dotenv
@@ -22,7 +23,7 @@ def get_user_latlng():
 def get_user_location():
 
     latlng = get_user_latlng()
-    url = "https://maps.googleapis.com/maps/api/geocode/json?"
+    url = "https://maps.googleapis.com/maps/api/geocode/json?".format(request.remote_addr)
 
     try:
         params = {
@@ -185,7 +186,7 @@ def get_user_weather():
     }
     return weather.json()
 
-    # return fakeload
+    return fakeload
 
 
 # debug(get_user_weather())

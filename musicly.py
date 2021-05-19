@@ -1,15 +1,11 @@
-import os
+import requests
 import logging
-import json
-import types
 import tagger
+import geocoder
 from hasher import hashsong
 from laststuff import getartistinfo
 from icecream import ic as debug
 from flask import Flask, render_template, Response
-from tornado.wsgi import WSGIContainer
-from tornado.httpserver import HTTPServer
-from tornado.ioloop import IOLoop
 
 app = Flask(__name__)
 app.secret_key = "music"
@@ -44,7 +40,7 @@ def show_music():
 def get_user_latlng():
     # hostName = socket.gethostname()
     # userIp = socket.gethostbyname(hostname)
-    ip = request.remote_addr
+    ip = requests.remote_addr
     userIp = geocoder.ip("me")  # <--- this works but userip doesnt?!
     userLocation = userIp.latlng
     print(ip)
