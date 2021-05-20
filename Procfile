@@ -1,1 +1,1 @@
-web: gunicorn app:weatherly
+web: gunicorn weatherly:app
