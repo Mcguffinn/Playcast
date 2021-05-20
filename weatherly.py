@@ -78,5 +78,4 @@ def playcast():
 if __name__ == "__main__":
     port = 5000
     app.run(debug=True)
-    app.config['UPLOAD_FOLDER'] = weatherFolder
     logging.debug("Started server, site: " + "http://localhost:" + str(port))
