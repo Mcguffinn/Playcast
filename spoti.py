@@ -1,8 +1,5 @@
 import requests
-import socket
 import os
-import logging
-import json
 import base64
 import datetime
 from icecream import ic as debug
@@ -111,16 +108,3 @@ class SpotifyAPI():
         return r.json()
 
 spotify = SpotifyAPI(client_id, client_secret)
-
-# data = spotify.search(query="Freezing Rain", )
-# data = spotify.search("Light Rain",search_type="playlist")
-# for items in data['playlists']["items"]:
-#     image = items["images"][0]["url"]
-#     name = items["name"]
-#     debug(image, name)
-
-
-
-
-
-# debug(spotify.search("Light Rain",search_type="playlist"))
