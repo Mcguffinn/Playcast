@@ -13,7 +13,7 @@ ENV = 'production'
 
 if ENV == 'dev':
     app.debug = True
-    port = 5000
+    port = os.environ.get("PORT")
     logging.debug("Started server, site: " + "http://localhost:" + str(port))
 else:
     app.debug = False
