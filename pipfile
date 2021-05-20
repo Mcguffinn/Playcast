@@ -1,0 +1,34 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+asttokens="*"
+certifi="*"
+chardet="*"
+click="*"
+colorama="*"
+executing="*"
+Flask="*"
+gunicorn="*"
+icecream="*"
+idna="*"
+itsdangerous="*"
+Jinja2="*"
+MarkupSafe="*"
+mutagen="*"
+Pygments="*"
+pylast="*"
+python-dotenv="*"
+requests="*"
+six="*"
+tornado="*"
+urllib3="*"
+Werkzeug="*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
