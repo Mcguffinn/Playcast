@@ -27,6 +27,7 @@ six="*"
 tornado="*"
 urllib3="*"
 Werkzeug="*"
+geocoder="*"
 
 [dev-packages]
 
