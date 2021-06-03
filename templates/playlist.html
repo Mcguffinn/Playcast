@@ -4,8 +4,9 @@
     <section class="container-fluid">
       <div class="row">        
         <img src="{{ weatherSVG }}" class="rounded mx-auto d-block weatherSVG" style="width: 50%"/>
-        <h3 class="display-1 title">The weather is:</h3>
-        <h3 class="display-1 title">{{weatherStatus}}</h3>
+        <h3 class="display-2 title">The Weather is:</h3>
+        <h3 class="display-3 title">{{temperature}}°F</h3>
+        <h3 class="display-3 title">{{weatherStatus}}</h3>
       </div> 
       {% for row in playlistData %}
         {% if row['description'] == '' %}{% else %}

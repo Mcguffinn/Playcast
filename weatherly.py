@@ -9,7 +9,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY')
-ENV = 'production'
+ENV = os.environ.get('SECRET_KEY')
 
 if ENV == 'dev':
     app.debug = True
@@ -24,7 +24,7 @@ spotify = SpotifyAPI(client_id=os.environ.get("CLIENT_ID"),
 
 
 def get_weather_status():
-    weatherCodes = {
+    weatherInfo = {
         4201: ["Heavy Rain", "static\icons\rain_heavy.svg"],
         4001: ["Rain", "static\icons\rain.svg"],
         4200: ["Light Rain", "static\icons\rain_light.svg"],
@@ -50,11 +50,13 @@ def get_weather_status():
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
 
-    key = get_user_weather()[
-        "data"]["timelines"][0]["intervals"][0]["values"]["weatherCode"]
-    svg = weatherCodes[key][1]
-    weatherStatus = weatherCodes[key][0]
-    return (svg, weatherStatus)
+    key = get_user_weather()["data"]["timelines"][0]["intervals"][0]["values"]
+    weatherCodes = key.get("weatherCode")
+    svg = weatherInfo[weatherCodes][1]
+    temp = key.get("temperature")
+    weatherStatus = weatherInfo[weatherCodes][0]
+    print(svg,  temp, weatherStatus)
+    return (svg, weatherStatus,  temp)
 
 
 @app.route("/")
@@ -81,9 +83,9 @@ def get_playlist_data(query):
 
 @app.route('/playcast')
 def playcast():
-    weatherSVG = get_weather_status()
-    playlist = get_playlist_data(weatherSVG[1])
-    return render_template("playlist.html", playlistData=playlist, weatherSVG=weatherSVG[0], weatherStatus=weatherSVG[1],)
+    weatherInfo = get_weather_status()
+    playlist = get_playlist_data(weatherInfo[1])
+    return render_template("playlist.html", playlistData=playlist, weatherSVG=weatherInfo[0], weatherStatus=weatherInfo[1], temperature=weatherInfo[2])
 
 
 if __name__ == "__main__":
