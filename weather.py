@@ -9,72 +9,79 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_user_latlng():
-    userIp = geocoder.ip("me")  # <--- this works but userip doesnt?!
-    userLocation = userIp.latlng
-    return userLocation
-
-
-def get_user_location():
-
-    latlng = get_user_latlng()
-    url = "https://maps.googleapis.com/maps/api/geocode/json?".format(
-        request.remote_addr)
-
-    try:
+class Weather():
+    def get_user_latlng(self, ip):
+        url = "https://ipgeolocation.abstractapi.com/v1/"
+        latlng = []
         params = {
-            "key": os.environ.get("GOOGLE_KEY"),
-            "latlng": str(latlng).strip("[]"),
+            "api_key": os.environ.get("ABSTRACT_KEY"),
+            "ip_address": ip,
         }
+
         userLocationData = requests.get(url, params=params)
+        latlng = userLocationData.json()
 
-        return userLocationData.json()
+        debug(latlng)
+        return latlng
 
-    except:
-        print("There was an error")
+    def get_user_location(self,):
 
+        latlng = self.get_user_latlng()
+        url = "https://maps.googleapis.com/maps/api/geocode/json?".format(
+            request.remote_addr)
 
-def build_params():
+        try:
+            params = {
+                "key": os.environ.get("GOOGLE_KEY"),
+                "latlng": str(latlng).strip("[]"),
+            }
+            userLocationData = requests.get(url, params=params)
 
-    now = datetime.now()
-    startTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-    endTime = now + timedelta(hours=5)
-    latlng = get_user_latlng()
+            return userLocationData.json()
 
-    timeSteps = [
-        "current",
-        "1h",
-    ]
+        except:
+            print("There was an error")
 
-    fields = [
-        "precipitationIntensity",
-        "precipitationType",
-        "windSpeed",
-        "temperature",
-        "temperatureApparent",
-        "weatherCode",
-    ]
+    def build_params(self, ip):
 
-    payload = {
-        "apikey": os.environ.get("WEATHER_API_KEY"),
-        "location": str(latlng).strip("[]"),
-        "fields": fields,
-        "units": "imperial",
-        "timesteps": timeSteps,
-        "startTime": startTime,
-        "endTime": endTime.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "timezone": "America/New_York",
-    }
+        now = datetime.now()
+        startTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        endTime = now + timedelta(hours=5)
+        latlng = self.get_user_latlng(ip)
 
-    return payload
+        timeSteps = [
+            "current",
+            "1h",
+        ]
 
+        fields = [
+            "precipitationIntensity",
+            "precipitationType",
+            "windSpeed",
+            "temperature",
+            "temperatureApparent",
+            "weatherCode",
+        ]
 
-def get_user_weather():
+        payload = {
+            "apikey": os.environ.get("WEATHER_API_KEY"),
+            "location": (latlng.get("latitude"), latlng.get("longitude")),
+            "fields": fields,
+            "units": "imperial",
+            "timesteps": timeSteps,
+            "startTime": startTime,
+            "endTime": endTime.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "timezone": "America/New_York",
+        }
 
-    url = "https://data.climacell.co/v4/timelines?"
-    weather = requests.get(url, params=build_params())
+        return payload
 
-    return weather.json()
+    def get_user_weather(self, ip):
+
+        url = "https://data.climacell.co/v4/timelines?"
+        weather = requests.get(url, params=self.build_params(ip))
+        debug(weather.json())
+        return weather.json()
 
 # ic| get_user_weather(): {'data': {'timelines': [{'endTime': '2021-06-02T20:19:00-04:00',
 #                                                  'intervals': [{'startTime': '2021-06-02T20:19:00-04:00',

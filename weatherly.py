@@ -1,15 +1,18 @@
 import logging
+import requests
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template, Response, Markup, url_for, flash, jsonify, request
-from weather import get_user_weather
+from weather import Weather
 from spoti import SpotifyAPI
 
 load_dotenv()
 
 app = Flask(__name__)
+ctx = app.app_context()
+ctx.push()
 app.secret_key = os.environ.get('SECRET_KEY')
-ENV = os.environ.get('SECRET_KEY')
+ENV = os.environ.get('ENV')
 
 if ENV == 'dev':
     app.debug = True
@@ -18,11 +21,12 @@ if ENV == 'dev':
 else:
     app.debug = False
 
-
+weather = Weather()
 spotify = SpotifyAPI(client_id=os.environ.get("CLIENT_ID"),
                      client_secret=os.environ.get("CLIENT_SECERET"))
 
 
+@app.route('/', methods=["GET"])
 def get_weather_status():
     weatherInfo = {
         4201: ["Heavy Rain", "static\icons\rain_heavy.svg"],
@@ -50,7 +54,8 @@ def get_weather_status():
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
 
-    key = get_user_weather()["data"]["timelines"][0]["intervals"][0]["values"]
+    key = weather.get_user_weather(ip=request.environ['REMOTE_ADDR']
+                                   )["data"]["timelines"][0]["intervals"][0]["values"]
     weatherCodes = key.get("weatherCode")
     svg = weatherInfo[weatherCodes][1]
     temp = key.get("temperature")
