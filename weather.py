@@ -12,7 +12,6 @@ load_dotenv()
 class Weather():
     def get_user_latlng(self, ip):
         url = "https://ipgeolocation.abstractapi.com/v1/"
-        latlng = []
         params = {
             "api_key": os.environ.get("ABSTRACT_KEY"),
             "ip_address": ip,
