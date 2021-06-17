@@ -14,7 +14,7 @@ class Weather():
         url = "https://ipgeolocation.abstractapi.com/v1/"
         params = {
             "api_key": os.environ.get("ABSTRACT_KEY"),
-            "ip_address": ip,
+            "ip_address": str(ip),
         }
 
         userLocationData = requests.get(url, params=params)
