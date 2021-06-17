@@ -65,7 +65,7 @@ class Weather():
 
         payload = {
             "apikey": os.environ.get("WEATHER_API_KEY"),
-            "location": (latlng.get("latitude"), latlng.get("longitude")),
+            "location": str((latlng.get("latitude"), latlng.get("longitude"))).strip('()'),
             "fields": fields,
             "units": "imperial",
             "timesteps": timeSteps,
@@ -73,7 +73,7 @@ class Weather():
             "endTime": endTime.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "timezone": "America/New_York",
         }
-
+        debug(payload)
         return payload
 
     def get_user_weather(self, ip):

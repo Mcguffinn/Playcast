@@ -2,6 +2,7 @@ import logging
 import requests
 import os
 from dotenv import load_dotenv
+from icecream import ic as debug
 from flask import Flask, render_template, Response, Markup, url_for, flash, jsonify, request
 from weather import Weather
 from spoti import SpotifyAPI
@@ -55,13 +56,14 @@ def get_weather_status():
     }
 
     key = weather.get_user_weather(ip=request.environ['REMOTE_ADDR']
-                                   )["data"]["timelines"][0]["intervals"][0]["values"]
-    weatherCodes = key.get("weatherCode")
-    svg = weatherInfo[weatherCodes][1]
-    temp = key.get("temperature")
-    weatherStatus = weatherInfo[weatherCodes][0]
-    print(svg,  temp, weatherStatus)
-    return (svg, weatherStatus,  temp)
+                                   )
+    weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
+    mark = weatherCodes.get("weatherCode")
+    svg = weatherInfo[mark]
+    temp = weatherCodes.get("temperature")
+    weatherStatus = weatherInfo[mark]
+    print("Print readout: ", svg[0],  str(temp), weatherStatus)
+    return (svg[0], str(temp))
 
 
 @app.route("/")
@@ -89,8 +91,9 @@ def get_playlist_data(query):
 @app.route('/playcast')
 def playcast():
     weatherInfo = get_weather_status()
-    playlist = get_playlist_data(weatherInfo[1])
-    return render_template("playlist.html", playlistData=playlist, weatherSVG=weatherInfo[0], weatherStatus=weatherInfo[1], temperature=weatherInfo[2])
+    (weatherSVG, weatherStatus, temperature) = weatherInfo
+    playlist = get_playlist_data(weatherStatus)
+    return render_template("playlist.html", playlistData=playlist, weatherSVG=weatherSVG, weatherStatus=weatherStatus, temperature=temperature)
 
 
 if __name__ == "__main__":
