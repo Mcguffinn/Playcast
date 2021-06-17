@@ -57,6 +57,7 @@ def get_weather_status():
 
     key = weather.get_user_weather(ip=request.environ['REMOTE_ADDR']
                                    )
+    debug(key)
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
     mark = weatherCodes.get("weatherCode")
     svg = weatherInfo[mark]
