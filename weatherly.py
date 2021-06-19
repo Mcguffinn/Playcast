@@ -11,9 +11,7 @@ from spoti import SpotifyAPI
 load_dotenv()
 
 app = Flask(__name__)
-prox = ProxyFix(app, x_for=1, x_host=1)
-ctx = app.app_context()
-ctx.push()
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
 app.secret_key = os.environ.get('SECRET_KEY')
 ENV = os.environ.get('ENV')
 
@@ -63,8 +61,7 @@ def get_weather_status():
         1100: ["Mostly Clear",	"static\icons\mostly_clear_day.svg"],
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
-
-    key = weather.get_user_weather(ip=request.environ['REMOTE_ADDR'] if None else os.environ.get("REMOTE_ADDR")
+    key = weather.get_user_weather(ip=request.remote_addr if None else os.environ.get("REMOTE_ADDR")
                                    )
     debug(key)
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
