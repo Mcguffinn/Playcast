@@ -10,13 +10,13 @@ load_dotenv()
 
 
 class Weather():
-    def get_user_latlng(self, ):
+    def get_user_latlng(self, ip):
         url = "https://ipgeolocation.abstractapi.com/v1/"
         params = {
             "api_key": os.environ.get("ABSTRACT_KEY"),
-            # "ip_address": str(ip),
+            "ip_address": str(ip),
         }
-        # debug(ip)
+        debug(ip)
         userLocationData = requests.get(url, params=params)
         latlng = userLocationData.json()
 
@@ -41,12 +41,12 @@ class Weather():
         except:
             print("There was an error")
 
-    def build_params(self, ):
+    def build_params(self, ip):
 
         now = datetime.now()
         startTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         endTime = now + timedelta(hours=5)
-        latlng = self.get_user_latlng()
+        latlng = self.get_user_latlng(ip)
 
         timeSteps = [
             "current",
@@ -75,10 +75,10 @@ class Weather():
         debug(payload)
         return payload
 
-    def get_user_weather(self, ):
+    def get_user_weather(self, ip):
 
         url = "https://data.climacell.co/v4/timelines?"
-        weather = requests.get(url, params=self.build_params())
+        weather = requests.get(url, params=self.build_params(ip))
         debug(weather.json())
         return weather.json()
 

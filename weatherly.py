@@ -17,6 +17,7 @@ ctx.push()
 app.secret_key = os.environ.get('SECRET_KEY')
 ENV = os.environ.get('ENV')
 
+
 if ENV == 'dev':
     app.debug = True
     port = os.environ.get("PORT")
@@ -63,8 +64,8 @@ def get_weather_status():
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
 
-    key = weather.get_user_weather(
-    )
+    key = weather.get_user_weather(ip=request.environ['REMOTE_ADDR'] if None else os.environ.get("REMOTE_ADDR")
+                                   )
     debug(key)
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
     mark = weatherCodes.get("weatherCode")
@@ -99,6 +100,5 @@ def playcast():
     return render_template("playlist.html", playlistData=playlist, weatherSVG=weatherSVG, weatherStatus=weatherStatus, temperature=temperature)
 
 
-app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == "__main__":
     app.run()
