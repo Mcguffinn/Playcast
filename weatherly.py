@@ -27,7 +27,13 @@ spotify = SpotifyAPI(client_id=os.environ.get("CLIENT_ID"),
                      client_secret=os.environ.get("CLIENT_SECERET"))
 
 
-@app.route('/', methods=["GET"])
+@app.route("/")
+def index():
+
+    return render_template("base.html")
+
+
+@app.route("/home", methods=['GET', 'POST'])
 def get_weather_status():
     weatherInfo = {
         4201: ["Heavy Rain", "static\icons\rain_heavy.svg"],
@@ -64,14 +70,7 @@ def get_weather_status():
     temp = weatherCodes.get("temperature")
     weatherStatus = weatherInfo[mark]
     print("Print readout: ", svg[0],  str(temp), weatherStatus)
-    return (svg[0], str(temp))
-
-
-@app.route("/")
-@app.route("/home", methods=['GET', 'POST'])
-def index():
-
-    return render_template("base.html")
+    return (svg[1], str(temp), weatherStatus[0])
 
 
 @app.route('/playlist/<query>')
@@ -92,7 +91,8 @@ def get_playlist_data(query):
 @app.route('/playcast')
 def playcast():
     weatherInfo = get_weather_status()
-    (weatherSVG, weatherStatus, temperature) = weatherInfo
+    debug(weatherInfo)
+    (weatherSVG, temperature, weatherStatus) = weatherInfo
     playlist = get_playlist_data(weatherStatus)
     return render_template("playlist.html", playlistData=playlist, weatherSVG=weatherSVG, weatherStatus=weatherStatus, temperature=temperature)
 
