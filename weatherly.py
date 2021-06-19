@@ -4,12 +4,14 @@ import os
 from dotenv import load_dotenv
 from icecream import ic as debug
 from flask import Flask, render_template, Response, Markup, url_for, flash, jsonify, request
+from werkzeug.middleware.proxy_fix import ProxyFix
 from weather import Weather
 from spoti import SpotifyAPI
 
 load_dotenv()
 
 app = Flask(__name__)
+prox = ProxyFix(app, x_for=1, x_host=1)
 ctx = app.app_context()
 ctx.push()
 app.secret_key = os.environ.get('SECRET_KEY')
@@ -97,5 +99,6 @@ def playcast():
     return render_template("playlist.html", playlistData=playlist, weatherSVG=weatherSVG, weatherStatus=weatherStatus, temperature=temperature)
 
 
+app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == "__main__":
     app.run()
