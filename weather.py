@@ -16,7 +16,7 @@ class Weather():
             "api_key": os.environ.get("ABSTRACT_KEY"),
             "ip_address": str(ip),
         }
-
+        debug(ip)
         userLocationData = requests.get(url, params=params)
         latlng = userLocationData.json()
 
