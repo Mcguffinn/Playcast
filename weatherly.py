@@ -61,7 +61,9 @@ def get_weather_status():
         1100: ["Mostly Clear",	"static\icons\mostly_clear_day.svg"],
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
-    key = weather.get_user_weather(ip=request.remote_addr if None else os.environ.get("REMOTE_ADDR")
+    ip = request.remote_addr if request.remote_addr != None else os.environ.get(
+        "REMOTE_ADDR")
+    key = weather.get_user_weather(ip
                                    )
     debug(key)
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
