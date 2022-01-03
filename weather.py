@@ -13,7 +13,7 @@ class Weather:
     def get_user_ip(self, ip):
         url = "https://ipinfo.io"
         params = {
-            "ip": ip if ip != None else os.environ.get("REMOTE_ADDR"),
+            "ip": ip,
             "token": os.environ.get("IPINFO_KEY"),
         }
 
