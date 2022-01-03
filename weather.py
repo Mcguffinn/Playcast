@@ -8,26 +8,27 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
-class Weather():
-    def get_user_latlng(self, ip):
-        url = "https://ipgeolocation.abstractapi.com/v1/"
+# request.remote_addr
+class Weather:
+    def get_user_ip(self, ip):
+        url = "https://ipinfo.io"
         params = {
-            "api_key": os.environ.get("ABSTRACT_KEY"),
-            "ip_address": str(ip),
+            "ip": ip if ip != None else os.environ.get("REMOTE_ADDR"),
+            "token": os.environ.get("IPINFO_KEY"),
         }
-        debug(ip)
-        userLocationData = requests.get(url, params=params)
-        latlng = userLocationData.json()
 
-        debug(latlng)
-        return latlng
+        userLocationData = requests.get(url, params=params).json()
 
-    def get_user_location(self,):
+        return userLocationData
+
+    def get_user_location(
+        self,
+    ):
 
         latlng = self.get_user_latlng()
         url = "https://maps.googleapis.com/maps/api/geocode/json?".format(
-            request.remote_addr)
+            request.remote_addr
+        )
 
         try:
             params = {
@@ -46,12 +47,7 @@ class Weather():
         now = datetime.now()
         startTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         endTime = now + timedelta(hours=5)
-        latlng = self.get_user_latlng(ip)
-
-        timeSteps = [
-            "current",
-            "1h",
-        ]
+        latlng = self.get_user_ip(ip)
 
         fields = [
             "precipitationIntensity",
@@ -64,10 +60,10 @@ class Weather():
 
         payload = {
             "apikey": os.environ.get("WEATHER_API_KEY"),
-            "location": str(latlng.get("latitude")) + "," + str(latlng.get("longitude")),
+            "location": str(latlng.get("loc")),
             "fields": fields,
             "units": "imperial",
-            "timesteps": timeSteps,
+            "timesteps": "1h",
             "startTime": startTime,
             "endTime": endTime.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "timezone": "America/New_York",
@@ -81,6 +77,9 @@ class Weather():
         weather = requests.get(url, params=self.build_params(ip))
         debug(weather.json())
         return weather.json()
+
+
+# Weather().get_user_weather(None)
 
 # ic| get_user_weather(): {'data': {'timelines': [{'endTime': '2021-06-02T20:19:00-04:00',
 #                                                  'intervals': [{'startTime': '2021-06-02T20:19:00-04:00',
