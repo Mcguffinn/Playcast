@@ -1,7 +1,7 @@
 import requests
 import geocoder
 import os
-from flask import request
+from flask import request, json
 from datetime import datetime, timedelta
 from icecream import ic as debug
 from dotenv import load_dotenv

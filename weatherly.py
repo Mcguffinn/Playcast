@@ -20,6 +20,8 @@ from spoti import SpotifyAPI
 load_dotenv()
 
 app = Flask(__name__)
+app.config['ENV']='development'
+app.config['DEBUG'] = True
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
 app.secret_key = os.environ.get("SECRET_KEY")
 ENV = os.environ.get("ENV")
@@ -121,4 +123,4 @@ def playcast():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(use_debugger=True, use_reloader=True)
