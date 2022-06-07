@@ -1,0 +1,104 @@
+.ebase {
+  background-image: hsla(0, 3%, 18%, 1);
+  background-image: linear-gradient(
+    0deg,
+    hsla(0, 3%, 18%, 1) 10%,
+    hsla(284, 61%, 39%, 1) 100%
+  );
+
+  background-image: -moz-linear-gradient(
+    90deg,
+    hsla(0, 3%, 18%, 1) 10%,
+    hsla(284, 61%, 39%, 1) 100%
+  );
+
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#302D2D", endColorstr="#7F27A0", GradientType=1 );
+}
+
+.title {
+  color: rgb(29, 185, 84);
+  text-align: center;
+  color: antiquewhite;
+  padding-bottom: 2rem;
+  padding-top: 2rem;
+}
+.song {
+  color: rgb(29, 27, 29) !important;
+}
+.accordion-collapse {
+  color: antiquewhite;
+  background-color: rgb(29, 27, 29);
+}
+p:after {
+  color: red;
+}
+.playlist {
+  display: flex;
+}
+
+td img {
+  height: auto;
+}
+
+.text-center {
+  color: antiquewhite;
+}
+
+.container {
+  padding: 0;
+  padding-top: 3rem;
+  min-height: 100vh;
+}
+
+.btn {
+  background: #0ccc19;
+  background-image: -webkit-linear-gradient(top, #0ccc19, #0da85d);
+  background-image: -moz-linear-gradient(top, #0ccc19, #0da85d);
+  background-image: -ms-linear-gradient(top, #0ccc19, #0da85d);
+  background-image: -o-linear-gradient(top, #0ccc19, #0da85d);
+  background-image: linear-gradient(to bottom, #0ccc19, #0da85d);
+  -webkit-border-radius: 28;
+  -moz-border-radius: 28;
+  border-radius: 28px;
+  font-family: Arial;
+  font-size: 20px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #50a354;
+  background-image: -webkit-linear-gradient(top, #50a354, #88b398);
+  background-image: -moz-linear-gradient(top, #50a354, #88b398);
+  background-image: -ms-linear-gradient(top, #50a354, #88b398);
+  background-image: -o-linear-gradient(top, #50a354, #88b398);
+  background-image: linear-gradient(to bottom, #50a354, #88b398);
+  text-decoration: none;
+}
+
+header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 40px 0;
+  z-index: 1000;
+}
+
+ul {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+ul li {
+  display: inline-block;
+  filter: invert(1);
+  margin: 0 1rem;
+}
+
+.socials {
+  padding: 2rem 2rem;
+}
+
+.container-fluid {
+  padding-bottom: 2rem;
+}

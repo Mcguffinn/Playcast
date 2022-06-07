@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block head %}
+
+<title>{{ Player }}</title>
+
+{% endblock %}
+{% block body %}
+    <div>
+        <h3>Playlist:</h3>
+    </div>
+
+    <div>
+        {% for entry in entries %}
+        <div>
+            <a href="/get_info\{{entry.artist}}">
+                <h4>{{entry.artist}}</h4>
+                {% with messages = get_flashed_messages(with_categories = true) %}
+                        {% if messages %}
+                            <ul class=flashes></ul>
+                                {% for catagory, message in messages %}
+                                    {% if category == 'songinfo' + stream_id %}
+                                        {{message}}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                {% endwith %}
+            </a>
+            <h4>{{entry.title}}</h4>
+            <div>
+                <h4>Genre:</h4>
+                <b>{{entry.genre}}</b>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="pull-right">
+                <audio controls>
+                    <source src="http://localhost:5000/{{ entry.songid }}" type="audio/mp3">
+                </audio>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
