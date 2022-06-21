@@ -1,8 +1,5 @@
 import requests
-import socket
 import os
-import logging
-import json
 import base64
 import datetime
 from icecream import ic as debug
@@ -12,6 +9,7 @@ from urllib.parse import urlencode
 load_dotenv()
 client_id = os.environ.get("CLIENT_ID")
 client_secret = os.environ.get("CLIENT_SECERET")
+
 
 class SpotifyAPI():
     accessToken = None
@@ -40,25 +38,25 @@ class SpotifyAPI():
     def get_token_header(self):
         clientCredsb64 = self.get_client_creds()
         return {
-        "Authorization": f"Basic {clientCredsb64}"
+            "Authorization": f"Basic {clientCredsb64}"
         }
-    
+
     def get_token_data(self):
         return {
-        "grant_type":"client_credentials"
+            "grant_type": "client_credentials"
         }
 
     def extract_access_token(self):
         tokenUrl = self.tokenUrl
         tokenData = self.get_token_data()
         tokenHeaders = self.get_token_header()
-        
+
         r = requests.post(tokenUrl, data=tokenData, headers=tokenHeaders)
         tokenResponseData = r.json()
 
         if r.status_code not in range(200, 299):
-            raise Exception("could not authenticate client") 
-            
+            raise Exception("could not authenticate client")
+
         data = r.json()
         now = datetime.datetime.now()
         accessToken = data['access_token']
@@ -103,24 +101,11 @@ class SpotifyAPI():
         payload = urlencode({"q": query, "type": search_type.lower()})
 
         lookupUrl = f"{endpoint}?{payload}"
-        debug(lookupUrl)
-
         r = requests.get(lookupUrl, headers=headers)
+
         if r.status_code not in range(200, 299):
             return {}
         return r.json()
 
+
 spotify = SpotifyAPI(client_id, client_secret)
-
-# data = spotify.search(query="Freezing Rain", )
-# data = spotify.search("Light Rain",search_type="playlist")
-# for items in data['playlists']["items"]:
-#     image = items["images"][0]["url"]
-#     name = items["name"]
-#     debug(image, name)
-
-
-
-
-
-# debug(spotify.search("Light Rain",search_type="playlist"))
