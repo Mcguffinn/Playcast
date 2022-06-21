@@ -1,35 +1,27 @@
 [[source]]
+<<<<<<< HEAD
+name = "pypi"
 url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+=======
+url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
-asttokens="*"
-certifi="*"
-chardet="*"
-click="*"
-colorama="*"
-executing="*"
-Flask="*"
-gunicorn="*"
-icecream="*"
-idna="*"
-itsdangerous="*"
-Jinja2="*"
-MarkupSafe="*"
-mutagen="*"
-Pygments="*"
-pylast="*"
-python-dotenv="*"
-requests="*"
-six="*"
-tornado="*"
-urllib3="*"
-Werkzeug="*"
-geocoder="*"
+flask*
+tornado*
+hashlib*
 
 [dev-packages]
+flask*
+tornado*
+hashlib*
+>>>>>>> 44fcb924e0dba85587b9b452738c23b73683e2bb
 
 [requires]
 python_version = "3.8"
