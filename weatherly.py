@@ -17,6 +17,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from weather import Weather
 from spoti import SpotifyAPI
 
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -75,10 +76,12 @@ def get_weather_status():
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
     ip = (
-        request.remote_addr
-        if request.remote_addr != None
-        else os.environ.get("REMOTE_ADDR")
+        request.headers["X-Forwarded-For"]
+        # request.remote_addr
+        # if request.remote_addr != None
+        # else os.environ.get("REMOTE_ADDR")
     )
+
     userInfo = weather.get_user_ip(str(ip))
     debug(userInfo)
     key = weather.get_user_weather(ip)
@@ -88,6 +91,7 @@ def get_weather_status():
     temp = weatherCodes.get("temperature")
     weatherStatus = weatherInfo[mark]
     print("Print readout: ", svg[0], str(temp), weatherStatus)
+    debug(ip)
     return (svg[1], str(temp), weatherStatus[0])
 
 
