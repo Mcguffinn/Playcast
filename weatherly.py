@@ -1,5 +1,4 @@
 import logging
-import requests
 import os
 from dotenv import load_dotenv
 from icecream import ic as debug
