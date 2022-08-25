@@ -22,7 +22,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['ENV']='development'
 app.config['DEBUG'] = True
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
+app.wsgi_app = ProxyFix(x_for=1, x_proto=1, x_host=1, x_prefix=1)
 app.secret_key = os.environ.get("SECRET_KEY")
 ENV = os.environ.get("ENV")
 
@@ -75,7 +75,7 @@ def get_weather_status():
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
     ip = (
-        request.headers["REMOTE_ADDR"]
+        request.headers["X-Forwarded-For"]
         # request.remote_addr
         # if request.remote_addr != None
         # else os.environ.get("REMOTE_ADDR")
