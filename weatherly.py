@@ -22,7 +22,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['ENV']='development'
 app.config['DEBUG'] = True
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+app = ProxyFix(app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 app.secret_key = os.environ.get("SECRET_KEY")
 ENV = os.environ.get("ENV")
 
