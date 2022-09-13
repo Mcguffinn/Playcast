@@ -44,7 +44,8 @@ spotify = SpotifyAPI(
 @app.route("/")
 def index():
 
-    return render_template("base.html")
+    #return render_template("base.html")
+    return str(request.headers) + f"remote_addr: {request.remote_addr}\n"
 
 
 @app.route("/home", methods=["GET", "POST"])
