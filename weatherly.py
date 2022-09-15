@@ -1,7 +1,5 @@
 import logging
 import os
-from dotenv import load_dotenv
-from icecream import ic as debug
 from flask import (
     Flask,
     render_template,
@@ -12,6 +10,8 @@ from flask import (
     jsonify,
     request,
 )
+from dotenv import load_dotenv
+from icecream import ic as debug
 from werkzeug.middleware.proxy_fix import ProxyFix
 from weather import Weather
 from spoti import SpotifyAPI
@@ -22,9 +22,9 @@ load_dotenv()
 app = Flask(__name__)
 app.config['ENV']='development'
 app.config['DEBUG'] = True
-app = ProxyFix(app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 app.secret_key = os.environ.get("SECRET_KEY")
 ENV = os.environ.get("ENV")
+# app = ProxyFix(app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
 
 if ENV == "dev":
