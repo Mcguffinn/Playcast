@@ -44,8 +44,8 @@ spotify = SpotifyAPI(
 @app.route("/")
 def index():
 
-    #return render_template("base.html")
-    return str(request.headers) + f"remote_addr: {request.remote_addr}\n"
+    return render_template("base.html") +str(request.headers)+ f"remote_addr: {request.remote_addr}\n"
+    # return str(request.headers) + f"remote_addr: {request.remote_addr}\n"
 
 
 @app.route("/home", methods=["GET", "POST"])
@@ -76,8 +76,8 @@ def get_weather_status():
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
     ip = (
-        request.headers["X-Forwarded-For"]
-        # request.remote_addr
+        # request.headers["X-Forwarded-For"]
+        request.remote_addr
         # if request.remote_addr != None
         # else os.environ.get("REMOTE_ADDR")
     )
