@@ -76,14 +76,14 @@ def get_weather_status():
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
     ip = (
-        # request.headers["X-Forwarded-For"]
-        request.remote_addr
+        request.headers["X-Forwarded-For"]
+        # request.remote_addr
         # if request.remote_addr != None
         # else os.environ.get("REMOTE_ADDR")
     )
+    debug(ip, request.remote_addr)
 
     userInfo = weather.get_user_ip(str(ip))
-    debug(userInfo)
     key = weather.get_user_weather(ip)
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
     mark = weatherCodes.get("weatherCode")
