@@ -59,7 +59,7 @@ class Weather:
         ]
 
         payload = {
-            "apikey": os.environ.get("WEATHER_API_KEY"),
+            "ip": ip,
             "location": str(latlng.get("loc")),
             "fields": fields,
             "units": "imperial",
