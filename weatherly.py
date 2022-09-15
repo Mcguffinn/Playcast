@@ -81,7 +81,6 @@ def get_weather_status():
         # if request.remote_addr != None
         # else os.environ.get("REMOTE_ADDR")
     )
-    debug(ip, request.remote_addr)
 
     userInfo = weather.get_user_ip(str(ip))
     key = weather.get_user_weather(ip)
@@ -90,8 +89,8 @@ def get_weather_status():
     svg = weatherInfo[mark]
     temp = weatherCodes.get("temperature")
     weatherStatus = weatherInfo[mark]
+    debug(ip, key)
     print("Print readout: ", svg[0], str(temp), weatherStatus)
-    debug(ip)
     return (svg[1], str(temp), weatherStatus[0])
 
 
