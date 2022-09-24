@@ -76,7 +76,7 @@ def get_weather_status():
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
     ip = (
-        request.headers["X-Forwarded-For"]
+        request.headers.get("X-Forwarded-For", request.remote_addr)
         # request.remote_addr
         # if request.remote_addr != None
         # else os.environ.get("REMOTE_ADDR")

@@ -21,9 +21,7 @@ class Weather:
 
         return userLocationData
 
-    def get_user_location(
-        self,
-    ):
+    def get_user_location(self):
 
         latlng = self.get_user_latlng()
         url = "https://maps.googleapis.com/maps/api/geocode/json?".format(
@@ -37,6 +35,7 @@ class Weather:
             }
             userLocationData = requests.get(url, params=params)
 
+            debug(userLocationData)
             return userLocationData.json()
 
         except:
@@ -59,7 +58,7 @@ class Weather:
         ]
 
         payload = {
-            "ip": ip,
+            "apikey": os.environ.get("WEATHER_API_KEY"),
             "location": str(latlng.get("loc")),
             "fields": fields,
             "units": "imperial",
@@ -68,7 +67,6 @@ class Weather:
             "endTime": endTime.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "timezone": "America/New_York",
         }
-        debug(payload)
         return payload
 
     def get_user_weather(self, ip):
