@@ -11,35 +11,34 @@ load_dotenv()
 # request.remote_addr
 class Weather:
     def get_user_ip(self, ip):
-        url = "https://ipinfo.io"
+        url = f"https://ipinfo.io/{ip}"
         params = {
-            "ip": ip,
             "token": os.environ.get("IPINFO_KEY"),
         }
 
         userLocationData = requests.get(url, params=params).json()
-
+        debug(ip, userLocationData)
         return userLocationData
 
-    def get_user_location(self):
+    # def get_user_location(self):
 
-        latlng = self.get_user_latlng()
-        url = "https://maps.googleapis.com/maps/api/geocode/json?".format(
-            request.remote_addr
-        )
+    #     latlng = self.get_user_latlng()
+    #     url = "https://maps.googleapis.com/maps/api/geocode/json?".format(
+    #         request.remote_addr
+    #     )
 
-        try:
-            params = {
-                "key": os.environ.get("GOOGLE_KEY"),
-                "latlng": str(latlng).strip("[]"),
-            }
-            userLocationData = requests.get(url, params=params)
+    #     try:
+    #         params = {
+    #             "key": os.environ.get("GOOGLE_KEY"),
+    #             "latlng": str(latlng).strip("[]"),
+    #         }
+    #         userLocationData = requests.get(url, params=params)
 
-            debug(userLocationData)
-            return userLocationData.json()
+    #         debug(userLocationData)
+    #         return userLocationData.json()
 
-        except:
-            print("There was an error")
+    #     except:
+    #         print("There was an error")
 
     def build_params(self, ip):
 

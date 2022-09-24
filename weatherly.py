@@ -82,7 +82,7 @@ def get_weather_status():
         # else os.environ.get("REMOTE_ADDR")
     )
 
-    userInfo = weather.get_user_ip(str(ip))
+    # userInfo = weather.get_user_ip(str(ip))
     key = weather.get_user_weather(ip)
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
     mark = weatherCodes.get("weatherCode")
