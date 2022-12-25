@@ -1,1 +1,1 @@
-web: gunicorn weatherly:app
+web: gunicorn -w 3 --forwarded-allow-ips="*" weatherly:app

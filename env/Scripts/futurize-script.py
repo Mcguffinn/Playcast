@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #!C:\Users\Edwin\Documents\Development\musicaly\env\Scripts\python.exe
+=======
+#!C:\Users\Edwin\Documents\Devlopment\Python\musicaly\env\Scripts\python.exe
+>>>>>>> 278bc2c6ba4d6956c2789ca2fb03497897becfc1
 # EASY-INSTALL-ENTRY-SCRIPT: 'future==0.18.2','console_scripts','futurize'
 import re
 import sys
