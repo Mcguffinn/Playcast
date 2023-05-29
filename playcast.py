@@ -79,7 +79,8 @@ def get_weather_status():
     svg = weatherInfo[mark]
     temp = weatherCodes.get("temperature")
     weatherStatus = weatherInfo[mark]
-    
+    debug(temp, weatherStatus)
+
     return (svg[1], str(temp), weatherStatus[0])
 
 
@@ -102,6 +103,7 @@ def get_playlist_data(query):
 @app.route("/playcast")
 def playcast():
     weatherInfo = get_weather_status()
+    debug('---------->',weatherInfo)
     (weatherSVG, temperature, weatherStatus) = weatherInfo
     playlist = get_playlist_data(weatherStatus)
     return render_template(

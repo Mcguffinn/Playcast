@@ -17,6 +17,7 @@ class Weather:
 
         userLocationData = requests.get(url, params=params).json()
 
+        debug(userLocationData)
         return userLocationData
 
 
@@ -47,6 +48,8 @@ class Weather:
             "endTime": endTime.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "timezone": "America/New_York",
         }
+
+        print(payload)
         return payload
 
     def get_user_weather(self, ip):
@@ -54,4 +57,5 @@ class Weather:
         url = "https://data.climacell.co/v4/timelines?"
         weather = requests.get(url, params=self.build_params(ip))
 
+        debug(weather, 'something')
         return weather.json()

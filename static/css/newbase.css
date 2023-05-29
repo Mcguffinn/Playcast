@@ -1,0 +1,148 @@
+.ebase {
+    align-items: center;
+    background-color: #2f2d2d;
+    border: 1px none;
+    display: flex;
+    flex-direction: column;
+    gap: 27px;
+    padding: 38px 0;
+    width: 100vw;
+}
+
+.hero-section {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    top: 0;
+}
+
+.title {
+    font-weight: 400;
+    left: 0;
+    top: 0;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+    text-align: center;
+    color: antiquewhite;
+    width: 576px;
+    padding-bottom: 2rem;
+    padding-top: 2rem;
+}
+
+.text-center {
+  color: antiquewhite;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-right: 16px;
+  margin-top: 54px;
+  text-align: center;
+
+}
+
+.button-group {
+    color: antiquewhite;
+    align-items: flex-end;
+    background: linear-gradient(180deg, rgba(188.77, 36.48, 213.56, 0.8) 14.06%, rgba(35.79, 76.94, 182.75, 0.77) 83.33%);
+    border-radius: 10px;
+    height: 44px;
+    margin-right: 32px;
+    margin-top: 23px;
+    padding: 0 8px;
+    text-align: center;
+    width: 24vh;
+    text-decoration: none;
+}
+
+.button{
+    color: antiquewhite;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    text-align: center;
+    padding-top: .8rem;
+}
+
+.accordion {
+    align-items: flex-end;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    position: relative;
+
+}
+
+.song {
+    flex: 1;
+    color: antiquewhite;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+}
+
+.headline {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    gap: 10px;
+    height: 85px;
+    position: relative;
+}
+
+.playlist-image{
+    /* align-self: stretch; */
+    border-radius: 1rem;
+    position: relative;
+}
+
+.btnControl[type="checkbox"] {
+    display: none;
+}
+
+.btnControl:checked + label > img {
+    transition: 0.6s ease;
+    transform: rotate(180deg);
+}
+.btnControl:not(:checked) + label > img {
+    transition: 0.6s ease;
+    transform: rotate(0deg);
+}
+
+/* .dropdown:active{
+    transition: 0.6s ease;
+    transform: rotate(180deg);
+} */
+
+
+.seperator{
+    align-self: stretch;
+    margin-left: -1px;
+    margin-right: -1px;
+    position: relative;
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+}
+
+.accordion-collapse{
+    width: 100%;
+}
+
+.accordion-body{
+    margin-right: -4px;
+    position: relative;
+}
+
+.description {
+    color: antiquewhite;
+    align-self: stretch;
+    flex: 1;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    position: relative;
+}
