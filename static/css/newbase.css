@@ -1,103 +1,104 @@
+@import "index.css";
+
 .ebase {
-    align-items: center;
-    background-color: #2f2d2d;
-    border: 1px none;
-    display: flex;
-    flex-direction: column;
-    gap: 27px;
-    padding: 38px 0;
-    width: 100vw;
+    background-color: var(--background);
 }
 
 .hero-section {
-    align-items: center;
+    align-items: var(--t-align);
     display: flex;
     flex-direction: column;
-    left: 0;
-    top: 0;
 }
 
 .title {
-    font-weight: 400;
-    left: 0;
-    top: 0;
-    letter-spacing: 0;
+    padding-bottom: var(--spacing);
+    padding-top: var(--spacing);
+    text-align: var(--t-align);
+    color: var(--text);
     line-height: normal;
     white-space: nowrap;
-    text-align: center;
-    color: antiquewhite;
-    width: 576px;
-    padding-bottom: 2rem;
-    padding-top: 2rem;
+    letter-spacing: 0;
 }
 
 .text-center {
-  color: antiquewhite;
-  font-weight: 400;
-  letter-spacing: 0;
+    font-weight: var(--weight);
+    text-align: var(--t-align);
+    padding: var(--spacing);
+  color: var(--text);
   line-height: normal;
-  margin-right: 16px;
-  margin-top: 54px;
-  text-align: center;
+  letter-spacing: 0;
 
 }
 
 .button-group {
-    color: antiquewhite;
+    background: var(--button-color);
+    text-align: var(--t-align);
+    margin: var(--spacing);
+    color: var(--text);
     align-items: flex-end;
-    background: linear-gradient(180deg, rgba(188.77, 36.48, 213.56, 0.8) 14.06%, rgba(35.79, 76.94, 182.75, 0.77) 83.33%);
-    border-radius: 10px;
-    height: 44px;
-    margin-right: 32px;
-    margin-top: 23px;
-    padding: 0 8px;
-    text-align: center;
-    width: 24vh;
     text-decoration: none;
+    border-radius: 10px;
+    height: 3rem;
+    width: 24vh;
 }
 
+
 .button{
-    color: antiquewhite;
-    font-weight: 400;
-    letter-spacing: 0;
+    font-weight: var(--weight);
+    text-align: var(--t-align);
+    color: var(--text);
     line-height: normal;
-    text-align: center;
+    letter-spacing: 0;
     padding-top: .8rem;
 }
 
+.button-group{
+    transition: background-color 1s;
+}
+.button-group:hover {
+    background-color: #004369;
+}
+
+.button-group:focus,
+.button-group:active {
+    background-color: black;
+    transition: none;
+}
+
 .accordion {
-    align-items: flex-end;
-    border-radius: 20px;
-    display: flex;
+    position: var(--pos);
     flex-direction: column;
-    gap: 20px;
+    align-items: flex-end;
+    display: flex;
     padding: 20px;
-    position: relative;
+    border-radius: 20px;
+    gap: 20px;
 
 }
 
 .song {
-    flex: 1;
-    color: antiquewhite;
-    font-weight: 400;
-    letter-spacing: 0;
+    font-weight: var(--weight);
+    color: var(--text);
     line-height: normal;
-    white-space: nowrap;
+    letter-spacing: 0;
+    flex: 1;
 }
 
 .headline {
-    align-items: center;
+    align-items: var(--t-align);
+    position: var(--pos);
     align-self: stretch;
     display: flex;
     gap: 10px;
     height: 85px;
-    position: relative;
 }
 
 .playlist-image{
-    /* align-self: stretch; */
+    position: var(--pos);
+    object-fit: cover;
+    height: auto;
     border-radius: 1rem;
-    position: relative;
+    max-width: 100%;
 }
 
 .btnControl[type="checkbox"] {
@@ -113,36 +114,30 @@
     transform: rotate(0deg);
 }
 
-/* .dropdown:active{
-    transition: 0.6s ease;
-    transform: rotate(180deg);
-} */
-
-
 .seperator{
-    align-self: stretch;
+    padding-bottom: var(--spacing);
+    position: var(--pos);
     margin-left: -1px;
     margin-right: -1px;
-    position: relative;
     padding-top: 3rem;
-    padding-bottom: 2rem;
+    align-self: stretch;
 }
 
 .accordion-collapse{
+    padding-bottom: var(--spacing);
     width: 100%;
 }
 
 .accordion-body{
+    position: var(--pos);
     margin-right: -4px;
-    position: relative;
 }
 
 .description {
-    color: antiquewhite;
-    align-self: stretch;
-    flex: 1;
-    font-weight: 400;
-    letter-spacing: 0;
+    font-weight: var(--weight);
+    position: var(--pos);
+    color: var(--text);
+    font-size: var(--spacing);
     line-height: normal;
-    position: relative;
+    letter-spacing: 0;
 }
