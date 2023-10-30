@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block body %}
+    
+    <section class="container-fluid">
+      <div class="row">        
+        <img src="{{ weatherSVG }}" class="rounded mx-auto d-block weatherSVG" style="width: 25%"/>
+        <h3 class="display-2 title">The Weather is:</h3>
+        <h3 class="display-3 title">{{temperature}}°F</h3>
+        <h3 class="display-3 title">{{weatherStatus}}</h3>
+      </div> 
+      {% for row in playlistData %}
+        {% if row['description'] == '' %}{% else %}
+        <div class="accordion" id="accordionExample"> 
+          <div class="headline" id="heading{{loop.index}}">
+            <img src="{{row['image']}}" class="playlist-image" width="15%" height="auto"/>
+            <h2 class="song">{{row['name']}}</h2>
+            <input type="checkbox" id="btnControl{{loop.index}}" class="btnControl"/>
+            <label for="btnControl{{loop.index}}" class="btnControl" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="heading{{loop.index}}"><img class="dropdown" src="/static/others/dropdown.svg" alt="dropdown"/></label>
+          </div>
+          <img class="seperator"src="/static/others/seperator.svg" alt="seperator" />
+          <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="{{loop.index}}" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <p class="description">{{row['description']}}</p>  
+              <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer"><p>Link to Playlist</p></a>            
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </section>
+
+{% endblock %}
+{% block script %}
+
+    <script>
+        let data = {};
+        $('#click').click(function (){
+        $.ajax({
+          type: 'GET',
+          url:'/playlist/<query>',
+          success: function (response) {
+            data = {
+              image: response.image,
+              name: response.name,
+            }
+            console.log(data)
+          }
+        })
+      })
+        
+    </script>
+
+{% endblock %}

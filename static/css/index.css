@@ -1,0 +1,10 @@
+:root {
+    --text: antiquewhite;
+    --t-align: center;
+    --background: #2f2d2d;
+    --spacing: 2rem;
+    --weight: 400;
+    --pos: relative;
+    --button-color: linear-gradient(180deg, rgba(188.77, 36.48, 213.56, 0.8) 14.06%, rgba(35.79, 76.94, 182.75, 0.77) 83.33%);
+
+}
