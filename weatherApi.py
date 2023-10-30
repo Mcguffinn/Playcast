@@ -62,7 +62,7 @@ class Weather:
         session.mount('http://', adapter)
         session.mount('https://', adapter)
 
-        url = "https://data.climacell.co/v4/timelines?"
+        url = "https://api.tomorrow.io/v4/timelines?"
         weather = session.get(url, params=self.build_params(ip))
         debug(ip, weather.json())
         return weather.json()
