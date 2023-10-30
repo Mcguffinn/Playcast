@@ -19,9 +19,11 @@ class Weather:
         }
 
         userLocationData = requests.get(url, params=params).json()
-
-        return userLocationData
+        #debug(userLocationData)
         
+        return userLocationData
+
+
     def build_params(self, ip):
 
         now = datetime.now()
@@ -49,14 +51,11 @@ class Weather:
             "timezone": "America/New_York",
         }
 
+        #debug(payload)
         return payload
 
     def get_user_weather(self, ip):
 
-        url = "https://data.climacell.co/v4/timelines?"
-        weather = requests.get(url, params=self.build_params(ip))
-
-        return weather.json()
         # A method to slow down api calls so they arent rejected
         session = requests.Session()
         retry = Retry(connect=3, backoff_factor=0.5)
@@ -66,7 +65,7 @@ class Weather:
 
         url = "https://data.climacell.co/v4/timelines?"
         weather = session.get(url, params=self.build_params(ip))
-        #debug(ip, weather.json())
+        debug(ip, url, weather.json())
         return weather.json()
 
 # test = Weather()
