@@ -5,6 +5,8 @@ from flask import request
 from datetime import datetime, timedelta
 from icecream import ic as debug
 from dotenv import load_dotenv
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 
 load_dotenv()
 
@@ -17,29 +19,10 @@ class Weather:
         }
 
         userLocationData = requests.get(url, params=params).json()
+        
+        debug(userLocationData)
 
         return userLocationData
-
-    def get_user_location(
-        self,
-    ):
-
-        latlng = self.get_user_latlng()
-        url = "https://maps.googleapis.com/maps/api/geocode/json?".format(
-            request.remote_addr
-        )
-
-        try:
-            params = {
-                "key": os.environ.get("GOOGLE_KEY"),
-                "latlng": str(latlng).strip("[]"),
-            }
-            userLocationData = requests.get(url, params=params)
-
-            return userLocationData.json()
-
-        except:
-            print("There was an error")
 
     def build_params(self, ip):
 
@@ -68,11 +51,22 @@ class Weather:
             "timezone": "America/New_York",
         }
 
+        #debug(payload)
         return payload
 
     def get_user_weather(self, ip):
 
-        url = "https://data.climacell.co/v4/timelines?"
-        weather = requests.get(url, params=self.build_params(ip))
+        # A method to slow down api calls so they arent rejected
+        session = requests.Session()
+        retry = Retry(connect=3, backoff_factor=0.5)
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
 
+        url = "https://data.climacell.co/v4/timelines?"
+        weather = session.get(url, params=self.build_params(ip))
+        #debug(ip, weather.json())
         return weather.json()
+
+# test = Weather()
+# debug(test.get_user_location())
