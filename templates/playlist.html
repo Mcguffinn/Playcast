@@ -3,6 +3,7 @@
     
     <section class="container-fluid">
       <div class="row">        
+<<<<<<< HEAD
         <img src="{{ weatherSVG }}" class="rounded mx-auto d-block weatherSVG" style="width: 25%"/>
         <h3 class="display-2 title">The Weather is:</h3>
         <h3 class="display-3 title">{{temperature}}°F</h3>
@@ -24,6 +25,27 @@
               <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer"><p>Link to Playlist</p></a>            
             </div>
           </div>
+=======
+        <img src="{{ weatherSVG }}" class="rounded mx-auto d-block weatherSVG" style="width: 50%"/>
+        <h3 class="display-1 title">The weather is:</h3>
+        <h3 class="display-1 title">{{weatherStatus}}</h3>
+      </div> 
+      {% for row in playlistData %}
+        {% if row['description'] == '' %}{% else %}
+        <div class="accordion" id="accordionExample">
+            <h2 class="accordion-header" id="heading{{loop.index}}">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="collapse{{loop.index}}">
+                <img src="{{row['image']}}" id="playlist-image" width="15%" height="auto"/>
+                <h4 class="display-6">{{row['name']}}</h4>
+              </button>
+            </h2>
+            <div id="collapse{{loop.index}}" class="accordion-collapse collapse hide" aria-labelledby="{{loop.index}}" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+                  <p>{{row['description']}}</p>  
+                  <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer"><p>Link to Playlist</p></a>            
+              </div>
+            </div>
+>>>>>>> 397b6d94f700a7edee77e0f4692636390834f686
         </div>
         {% endif %}
       {% endfor %}
@@ -34,6 +56,11 @@
 
     <script>
         let data = {};
+<<<<<<< HEAD
+=======
+        // let debug = document.getElementById("debug").innerHTML;
+        // 
+>>>>>>> 397b6d94f700a7edee77e0f4692636390834f686
         $('#click').click(function (){
         $.ajax({
           type: 'GET',
@@ -50,4 +77,8 @@
         
     </script>
 
+<<<<<<< HEAD
 {% endblock %}
+=======
+{% endblock %}
+>>>>>>> 397b6d94f700a7edee77e0f4692636390834f686
