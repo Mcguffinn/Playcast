@@ -17,10 +17,29 @@
 
 .title {
   color: rgb(29, 185, 84);
+  font-weight: 400;
+  left: 0;
+  top: 0;
+  letter-spacing: 0;
+  line-height: normal;
+  white-space: nowrap;
   text-align: center;
   color: antiquewhite;
+  width: 576px;
   padding-bottom: 2rem;
   padding-top: 2rem;
+}
+
+.button-group{
+  align-items: flex-end;
+  background: linear-gradient(180deg, rgba(188.77, 36.48, 213.56, 0.8) 14.06%, rgba(35.79, 76.94, 182.75, 0.77) 83.33%);
+  border-radius: 10px;
+  height: 44px;
+  margin-right: 32px;
+  margin-top: 23px;
+  padding: 0 8px;
+  text-align: center;
+  width: 80px;
 }
 .song {
   color: rgb(29, 27, 29) !important;
@@ -42,6 +61,13 @@ td img {
 
 .text-center {
   color: antiquewhite;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: normal;
+  margin-right: 16px;
+  margin-top: 54px;
+  text-align: center;
+
 }
 
 .container {

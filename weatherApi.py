@@ -5,6 +5,11 @@ from flask import request
 from datetime import datetime, timedelta
 from icecream import ic as debug
 from dotenv import load_dotenv
+<<<<<<< HEAD
+=======
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
+>>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
 
 load_dotenv()
 
@@ -17,6 +22,7 @@ class Weather:
         }
 
         userLocationData = requests.get(url, params=params).json()
+<<<<<<< HEAD
 
         return userLocationData
 
@@ -31,6 +37,13 @@ class Weather:
         return js
 
 
+=======
+        
+        debug(userLocationData)
+
+        return userLocationData
+
+>>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
     def build_params(self, ip):
 
         now = datetime.now()
@@ -58,11 +71,32 @@ class Weather:
             "timezone": "America/New_York",
         }
 
+<<<<<<< HEAD
+=======
+        #debug(payload)
+>>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
         return payload
 
     def get_user_weather(self, ip):
 
+<<<<<<< HEAD
         url = "https://data.climacell.co/v4/timelines?"
         weather = requests.get(url, params=self.build_params(ip))
 
         return weather.json()
+=======
+        # A method to slow down api calls so they arent rejected
+        session = requests.Session()
+        retry = Retry(connect=3, backoff_factor=0.5)
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
+
+        url = "https://data.climacell.co/v4/timelines?"
+        weather = session.get(url, params=self.build_params(ip))
+        #debug(ip, weather.json())
+        return weather.json()
+
+# test = Weather()
+# debug(test.get_user_location())
+>>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
