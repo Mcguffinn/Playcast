@@ -3,15 +3,10 @@
     
     <section class="container-fluid">
       <div class="row">        
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
         <img src="{{ weatherSVG }}" class="rounded mx-auto d-block weatherSVG" style="width: 25%"/>
         <h3 class="display-2 title">The Weather is:</h3>
         <h3 class="display-3 title">{{temperature}}°F</h3>
         <h3 class="display-3 title">{{weatherStatus}}</h3>
-<<<<<<< HEAD
       </div> 
       {% for row in playlistData %}
         {% if row['description'] == '' %}{% else %}
@@ -29,12 +24,9 @@
               <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer"><p>Link to Playlist</p></a>            
             </div>
           </div>
-=======
         <img src="{{ weatherSVG }}" class="rounded mx-auto d-block weatherSVG" style="width: 50%"/>
         <h3 class="display-1 title">The weather is:</h3>
         <h3 class="display-1 title">{{weatherStatus}}</h3>
-=======
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
       </div> 
       {% for row in playlistData %}
         {% if row['description'] == '' %}{% else %}
@@ -51,11 +43,7 @@
               <p class="description">{{row['description']}}</p>  
               <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer"><p>Link to Playlist</p></a>            
             </div>
-<<<<<<< HEAD
->>>>>>> 397b6d94f700a7edee77e0f4692636390834f686
-=======
           </div>
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
         </div>
         {% endif %}
       {% endfor %}
@@ -66,14 +54,8 @@
 
     <script>
         let data = {};
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
         // let debug = document.getElementById("debug").innerHTML;
         // 
->>>>>>> 397b6d94f700a7edee77e0f4692636390834f686
-=======
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
         $('#click').click(function (){
         $.ajax({
           type: 'GET',
@@ -89,13 +71,4 @@
       })
         
     </script>
-
-<<<<<<< HEAD
-<<<<<<< HEAD
 {% endblock %}
-=======
-{% endblock %}
->>>>>>> 397b6d94f700a7edee77e0f4692636390834f686
-=======
-{% endblock %}
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
