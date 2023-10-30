@@ -64,8 +64,8 @@ class Weather:
         session.mount('https://', adapter)
 
         url = "https://data.climacell.co/v4/timelines?"
-        weather = session.get(url, params=self.build_params(ip))
-        debug(ip, url, weather.json())
+        weather = requests.get(url, params=self.build_params(ip))
+        debug(ip, weather.json())
         return weather.json()
 
 # test = Weather()
