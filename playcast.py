@@ -6,11 +6,6 @@ from flask import (
     Flask,
     render_template,
     request,
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
 )
 from werkzeug.middleware.proxy_fix import ProxyFix
 from weatherApi import Weather
