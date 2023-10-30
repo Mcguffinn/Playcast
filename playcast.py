@@ -71,25 +71,14 @@ def get_weather_status():
         1100: ["Mostly Clear", "static\icons\mostly_clear_day.svg"],
         1000: ["Clear", "static\icons\clear_day.svg"],
     }
-<<<<<<< HEAD
-=======
     
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
     ip = (
         request.remote_addr
         # if request.remote_addr != None
         # else os.environ.get("REMOTE_ADDR")
     )
-<<<<<<< HEAD
-
-    loc = weather.get_user_location(ip)
-    key = weather.get_user_weather(ip)
-    debug(ip)
-=======
     
-    debug(ip)
     key = weather.get_user_weather(ip)
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
     mark = weatherCodes.get("weatherCode")
     svg = weatherInfo[mark]
@@ -118,11 +107,7 @@ def get_playlist_data(query):
 @app.route("/playcast")
 def playcast():
     weatherInfo = get_weather_status()
-<<<<<<< HEAD
-    debug(weatherInfo)
-=======
     #debug(weatherInfo)
->>>>>>> a5092fc248fc956a00acf933ba845e1582cfc746
     (weatherSVG, temperature, weatherStatus) = weatherInfo
     playlist = get_playlist_data(weatherStatus)
     return render_template(
