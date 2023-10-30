@@ -1,5 +1,4 @@
 import requests
-import geocoder
 import os
 from flask import request
 from datetime import datetime, timedelta
@@ -64,7 +63,7 @@ class Weather:
         session.mount('https://', adapter)
 
         url = "https://data.climacell.co/v4/timelines?"
-        weather = requests.get(url, params=self.build_params(ip))
+        weather = session.get(url, params=self.build_params(ip))
         debug(ip, weather.json())
         return weather.json()
 
