@@ -12,8 +12,6 @@ load_dotenv()
 class Weather:
     def get_user_ip(self):
         response = requests.get('https://api64.ipify.org?format=json').json()
-
-        debug(response)
         
         return response["ip"]
 
@@ -24,8 +22,8 @@ class Weather:
             "ip": self.get_user_ip(),
             "token": os.environ.get("IPINFO_KEY"),
         }
+
         userLocationData = requests.get(url, params=params).json()
-        debug(userLocationData)
 
         return userLocationData
 
@@ -34,7 +32,6 @@ class Weather:
         now = datetime.now()
         startTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         endTime = now + timedelta(hours=5)
-        ip = self.get_user_ip()
         latlng = self.get_location()
 
         fields = [
@@ -57,7 +54,6 @@ class Weather:
             "timezone": "America/New_York",
         }
 
-        #debug(payload)
         return payload
 
     def get_user_weather(self):
@@ -71,8 +67,5 @@ class Weather:
 
         url = "https://api.tomorrow.io/v4/timelines?"
         weather = session.get(url, params=self.build_params())
-        debug(weather.json())
-        return weather.json()
 
-# test = Weather()
-# debug(test.get_user_location())
+        return weather.json()
