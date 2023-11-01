@@ -22,16 +22,22 @@ class Weather:
         
         return response
 
-
+    def get_client_ip(self):
+        if 'X-Forwarded-For' in request.headers:
+            return request.headers['X-Forwarded-For'].split(',')[0]
+        else:
+            return request.remote_addr
+    
     def get_location(self):
-        url = "https://ipinfo.io".format(request.headers.get('X-Forwarded-For'))
+        user_ip = self.get_client_ip()
+        url = "https://ipinfo.io"
         params = {
-            "ip": self.get_user_ip(),
+            "ip": user_ip,
             "token": os.environ.get("IPINFO_KEY"),
         }
 
         userLocationData = requests.get(url, params=params).json()
-
+        debug(user_ip, userLocationData)
         return userLocationData
 
     def build_params(self):
