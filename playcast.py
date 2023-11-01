@@ -69,9 +69,10 @@ def get_weather_status():
     
     ip = (
         request.remote_addr
-        # if request.remote_addr != None
-        # else os.environ.get("REMOTE_ADDR")
     )
+    if request.remote_addr != None : remote_addr = request.remote_addr; x_forwarded_for = request.headers.get('X-Forwarded-For');
+    else : dev_addr = os.environ.get("REMOTE_ADDR"); debug(f'dev environment address: {dev_addr}')
+    debug(f'remote address: {remote_addr}\n {x_forwarded_for}')
     
     key = weather.get_user_weather(ip)
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
