@@ -11,9 +11,16 @@ load_dotenv()
 
 class Weather:
     def get_user_ip(self):
-        response = requests.get('https://api64.ipify.org?format=json').json()
+        session = requests.Session()
+        retry = Retry(connect=3, backoff_factor=0.5)
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
+    
+        url = 'https://api64.ipify.org?format=json'
+        response = session.get(url)
         
-        return response["ip"]
+        return response
 
 
     def get_location(self):
