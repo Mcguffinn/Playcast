@@ -10,25 +10,32 @@ from requests.adapters import HTTPAdapter
 load_dotenv()
 
 class Weather:
-    def get_user_ip(self, ip):
+    def get_user_ip(self):
+        response = requests.get('https://api64.ipify.org?format=json').json()
+
+        debug(response)
+        
+        return response["ip"]
+
+
+    def get_location(self):
         url = "https://ipinfo.io".format(request.headers.get('X-Forwarded-For'))
         params = {
-            # "ip": ip,
+            "ip": self.get_user_ip(),
             "token": os.environ.get("IPINFO_KEY"),
         }
-
         userLocationData = requests.get(url, params=params).json()
-        debug(request.headers.get('X-Forwarded-For'), userLocationData)
-        
+        debug(userLocationData)
+
         return userLocationData
 
-
-    def build_params(self, ip):
+    def build_params(self):
 
         now = datetime.now()
         startTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         endTime = now + timedelta(hours=5)
-        latlng = self.get_user_ip(ip)
+        ip = self.get_user_ip()
+        latlng = self.get_location()
 
         fields = [
             "precipitationIntensity",
@@ -53,7 +60,7 @@ class Weather:
         #debug(payload)
         return payload
 
-    def get_user_weather(self, ip):
+    def get_user_weather(self):
 
         # A method to slow down api calls so they arent rejected
         session = requests.Session()
@@ -63,8 +70,8 @@ class Weather:
         session.mount('https://', adapter)
 
         url = "https://api.tomorrow.io/v4/timelines?"
-        weather = session.get(url, params=self.build_params(ip))
-        debug(ip, weather.json())
+        weather = session.get(url, params=self.build_params())
+        debug(weather.json())
         return weather.json()
 
 # test = Weather()

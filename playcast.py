@@ -74,7 +74,7 @@ def get_weather_status():
     else : dev_addr = os.environ.get("REMOTE_ADDR"); debug(f'dev environment address: {dev_addr}')
     debug(f'remote address: {remote_addr}\n {x_forwarded_for}')
     
-    key = weather.get_user_weather(ip)
+    key = weather.get_user_weather()
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
     mark = weatherCodes.get("weatherCode")
     svg = weatherInfo[mark]
