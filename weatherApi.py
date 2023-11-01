@@ -11,14 +11,14 @@ load_dotenv()
 
 class Weather:
     def get_user_ip(self, ip):
-        url = "https://ipinfo.io".format(request.remote_addr)
+        url = "https://ipinfo.io".format(request.headers.get('X-Forwarded-For'))
         params = {
             # "ip": ip,
             "token": os.environ.get("IPINFO_KEY"),
         }
 
         userLocationData = requests.get(url, params=params).json()
-        debug(userLocationData)
+        debug(request.headers.get('X-Forwarded-For'), userLocationData)
         
         return userLocationData
 
