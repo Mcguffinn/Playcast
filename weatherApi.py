@@ -12,8 +12,11 @@ load_dotenv()
 class Weather:
 
     def get_client_ip(self):
-        debug(request.headers.get('X-Real-IP', request.remote_addr))
-        return request.headers.get('X-Real-IP', request.remote_addr)
+        if request.headers.getlist("X-Forwarded-For"):
+            ip = request.headers.getlist("X-Forwarded-For")[0]
+        else:
+            ip = request.remote_addr
+        return ip
     
     def get_location(self):
         user_ip = self.get_client_ip()
