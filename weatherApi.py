@@ -10,23 +10,9 @@ from requests.adapters import HTTPAdapter
 load_dotenv()
 
 class Weather:
-    def get_user_ip(self):
-        session = requests.Session()
-        retry = Retry(connect=3, backoff_factor=0.5)
-        adapter = HTTPAdapter(max_retries=retry)
-        session.mount('http://', adapter)
-        session.mount('https://', adapter)
-    
-        url = 'https://api64.ipify.org?format=json'
-        response = session.get(url)
-        
-        return response
 
     def get_client_ip(self):
-        if 'X-Forwarded-For' in request.headers:
-            return request.headers['X-Forwarded-For'].split(',')[0]
-        else:
-            return request.remote_addr
+        return request.headers.get('X-Real-IP', request.remote_addr)
     
     def get_location(self):
         user_ip = self.get_client_ip()
