@@ -1,20 +1,16 @@
-import logging
 import os
-from dotenv import load_dotenv
-from icecream import ic as debug
-from flask import (
-    Flask,
-    render_template,
-    request,
-)
+import logging
 from werkzeug.middleware.proxy_fix import ProxyFix
-from weatherApi import Weather
+from flask import (Flask, render_template)
+from dotenv import load_dotenv
 from spotifyApi import SpotifyAPI
+from weatherApi import Weather
+from icecream import ic as debug
 
 load_dotenv()
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 app.secret_key = os.environ.get("SECRET_KEY")
 ENV = os.environ.get("ENV")
 

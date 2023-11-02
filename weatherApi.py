@@ -12,6 +12,7 @@ load_dotenv()
 class Weather:
 
     def get_client_ip(self):
+        debug(request.headers.get('X-Real-IP', request.remote_addr))
         return request.headers.get('X-Real-IP', request.remote_addr)
     
     def get_location(self):
