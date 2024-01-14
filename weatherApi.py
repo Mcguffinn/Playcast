@@ -12,11 +12,12 @@ load_dotenv()
 class Weather:
 
     def get_client_ip(self):
-        headers_list = request.headers.getlist("HTTP_X_FORWARDED_FOR")
+        user_ip = request.headers.get('X-Real-IP', request.remote_addr)
         http_x_real_ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
 
-        ip_address = headers_list[0] if headers_list else http_x_real_ip
-        return ip_address
+        # ip_address = headers_list[0] if headers_list else http_x_real_ip
+        print(user_ip)
+        return user_ip
     
     def get_location(self):
         user_ip = self.get_client_ip()
@@ -27,7 +28,7 @@ class Weather:
         }
 
         userLocationData = requests.get(url, params=params).json()
-        debug(user_ip, userLocationData)
+        #debug(user_ip, userLocationData)
         return userLocationData
 
     def build_params(self):
@@ -35,8 +36,8 @@ class Weather:
         now = datetime.now()
         startTime = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         endTime = now + timedelta(hours=5)
-        latlng = self.get_location()
-
+        latlng = self.get_client_ip()
+        print(latlng)
         fields = [
             "precipitationIntensity",
             "precipitationType",
@@ -48,7 +49,7 @@ class Weather:
 
         payload = {
             "apikey": os.environ.get("WEATHER_API_KEY"),
-            "location": str(latlng.get("loc")),
+            "location": str(latlng),
             "fields": fields,
             "units": "imperial",
             "timesteps": "1h",
