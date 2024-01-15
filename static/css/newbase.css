@@ -106,6 +106,7 @@ header {
 .song {
     font-weight: var(--weight);
     color: var(--text);
+    color: antiquewhite;
     line-height: normal;
     letter-spacing: 0;
     flex: 1;
