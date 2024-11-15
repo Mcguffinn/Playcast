@@ -1,13 +1,13 @@
 import requests
 import os
 import logging
-from flask import request, current_app
+from flask import request
 from datetime import datetime, timedelta
 from icecream import ic as debug
 from dotenv import load_dotenv
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-from typing import Optional, Tuple, Dict, Any
+from typing import Dict, Any
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -18,13 +18,8 @@ class Weather:
         self.session = self._create_session()
 
     def _create_session(self) -> requests.Session:
-        """Create a session with retry logic"""
         session = requests.Session()
-        retry = Retry(
-            total=3,
-            backoff_factor=0.5,
-            status_forcelist=[500, 502, 503, 504]
-        )
+        retry = Retry(total=3, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
         adapter = HTTPAdapter(max_retries=retry)
         session.mount('http://', adapter)
         session.mount('https://', adapter)
@@ -32,43 +27,36 @@ class Weather:
 
     def get_client_ip(self) -> str:
         """
-        Get client IP address with detailed logging for debugging
+        Get client IP address with improved header handling for Render.com deployment
         """
-        # Log all relevant headers for debugging
         headers_debug = {
             'X-Forwarded-For': request.headers.get('X-Forwarded-For'),
-            'X-Real-IP': request.headers.get('X-Real-IP'),
             'CF-Connecting-IP': request.headers.get('CF-Connecting-IP'),
-            'Remote-Addr': request.remote_addr,
-            'Host': request.headers.get('Host'),
+            'Remote-Addr': request.remote_addr
         }
         logger.info(f"Request headers: {headers_debug}")
 
-        # Check headers in priority order
-        if request.headers.get('X-Forwarded-For'):
-            ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
-            logger.info(f"Using X-Forwarded-For IP: {ip}")
-            return ip
+        # Use CF-Connecting-IP as it's the most reliable for actual client IP
+        if cf_ip := request.headers.get('CF-Connecting-IP'):
+            logger.info(f"Using CF-Connecting-IP: {cf_ip}")
+            return cf_ip
         
-        if request.headers.get('X-Real-IP'):
-            ip = request.headers.get('X-Real-IP')
-            logger.info(f"Using X-Real-IP: {ip}")
-            return ip
-        
-        if request.headers.get('CF-Connecting-IP'):
-            ip = request.headers.get('CF-Connecting-IP')
-            logger.info(f"Using CF-Connecting-IP: {ip}")
-            return ip
+        # Fallback to first IP in X-Forwarded-For
+        if x_forwarded_for := request.headers.get('X-Forwarded-For'):
+            # Split on commas and get the first IP (client IP)
+            client_ip = x_forwarded_for.split(',')[0].strip()
+            logger.info(f"Using first X-Forwarded-For IP: {client_ip}")
+            return client_ip
 
+        # Last resort: use remote_addr
         logger.info(f"Using remote_addr: {request.remote_addr}")
         return request.remote_addr
 
     def get_location(self) -> Dict[str, Any]:
         """
-        Get location information with fallback options and error handling
+        Get location information with improved error handling
         """
         try:
-            # First try IP-based location
             user_ip = self.get_client_ip()
             logger.info(f"Attempting to get location for IP: {user_ip}")
             
@@ -82,26 +70,30 @@ class Weather:
             response.raise_for_status()
             location_data = response.json()
             
+            # Log the actual location data received
+            logger.info(f"Location data received: {location_data}")
+            
             # Validate location data
             if 'loc' not in location_data or not location_data['loc']:
                 raise ValueError("Invalid location data received from IPInfo")
-                
-            logger.info(f"Successfully got location data: {location_data}")
+            
             return location_data
 
         except Exception as e:
             logger.error(f"Error getting location: {str(e)}")
-            # Fallback to a default location (e.g., New York City)
+            # Return a default location as fallback
             return {
-                "loc": "40.7128,-74.0060",  # NYC coordinates
-                "city": "New York",
-                "region": "New York",
-                "country": "US"
+                "ip": user_ip,
+                "city": "Orlando",  # Default to Orlando
+                "region": "Florida",
+                "country": "US",
+                "loc": "28.6214,-81.4294",  # Orlando coordinates
+                "timezone": "America/New_York"
             }
 
     def build_params(self) -> Dict[str, Any]:
         """
-        Build weather API parameters with enhanced error handling
+        Build weather API parameters
         """
         try:
             now = datetime.now()
@@ -131,7 +123,11 @@ class Weather:
                 "timezone": "America/New_York",
             }
             
-            logger.info(f"Built weather API params (excluding apikey): {params}")
+            # Log params without API key
+            log_params = params.copy()
+            log_params['apikey'] = '***'
+            logger.info(f"Built weather API params: {log_params}")
+            
             return params
 
         except Exception as e:
@@ -140,7 +136,7 @@ class Weather:
 
     def get_user_weather(self) -> Dict[str, Any]:
         """
-        Get weather data with comprehensive error handling and logging
+        Get weather data with error handling
         """
         try:
             url = "https://api.tomorrow.io/v4/timelines"
@@ -151,30 +147,10 @@ class Weather:
             response.raise_for_status()
             
             weather_data = response.json()
-            
-            # Validate weather data
-            if 'data' not in weather_data or 'timelines' not in weather_data['data']:
-                raise ValueError("Invalid weather data received from API")
-            
             logger.info("Successfully retrieved weather data")
-            # Log the first interval's weather code for debugging
-            first_interval = weather_data['data']['timelines'][0]['intervals'][0]
-            logger.info(f"Weather code: {first_interval['values'].get('weatherCode')}")
             
             return weather_data
 
         except requests.exceptions.RequestException as e:
             logger.error(f"Error getting weather data: {str(e)}")
-            # Return a minimal error response that won't break the frontend
-            return {
-                "data": {
-                    "timelines": [{
-                        "intervals": [{
-                            "values": {
-                                "weatherCode": 1000,  # Clear weather as default
-                                "temperature": 70,  # Default temperature
-                            }
-                        }]
-                    }]
-                }
-            }
+            raise
