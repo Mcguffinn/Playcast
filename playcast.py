@@ -111,21 +111,21 @@ def playcast():
 """
 Great route for testing api endpoints in a production environment
 """
-# @app.route("/debug-weather")
-# def debug_weather():
-#     try:
-#         weather_instance = Weather()
-#         client_ip = weather_instance.get_client_ip()
-#         location = weather_instance.get_location()
-#         weather_data = weather_instance.get_user_weather()
+@app.route("/debug-weather")
+def debug_weather():
+    try:
+        weather_instance = Weather()
+        client_ip = weather_instance.get_client_ip()
+        location = weather_instance.get_location()
+        weather_data = weather_instance.get_user_weather()
         
-#         return {
-#             "client_ip": client_ip,
-#             "location": location,
-#             "weather": weather_data
-#         }
-#     except Exception as e:
-#         return {"error": str(e)}, 500
+        return {
+            "client_ip": client_ip,
+            "location": location,
+            "weather": weather_data
+        }
+    except Exception as e:
+        return {"error": str(e)}, 500
     
 if __name__ == "__main__":
     app.run()
