@@ -8,6 +8,8 @@ from weatherApi import Weather
 from icecream import ic as debug
 
 load_dotenv()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['PROXY_FIX_FOR'] = 1  # Number of proxies in front of your app
@@ -65,8 +67,8 @@ def get_weather_status():
     }
     
     key = weather.get_user_weather()
-    location = weather.get_location()
-    debug(key, location)
+    #location = weather.get_location()
+    #debug(key, location)
     weatherCodes = key["data"]["timelines"][0]["intervals"][0]["values"]
     mark = weatherCodes.get("weatherCode")
     svg = weatherInfo[mark]
@@ -107,6 +109,21 @@ def playcast():
         temperature=temperature,
     )
 
-
+@app.route("/debug-weather")
+def debug_weather():
+    try:
+        weather_instance = Weather()
+        client_ip = weather_instance.get_client_ip()
+        location = weather_instance.get_location()
+        weather_data = weather_instance.get_user_weather()
+        
+        return {
+            "client_ip": client_ip,
+            "location": location,
+            "weather": weather_data
+        }
+    except Exception as e:
+        return {"error": str(e)}, 500
+    
 if __name__ == "__main__":
     app.run()
