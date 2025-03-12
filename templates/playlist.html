@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% block body %}
 
@@ -8,47 +7,209 @@
         <h3 class="display-2 title">The Weather is:</h3>
         <h3 class="display-3 title">{{temperature}}°F</h3>
         <h3 class="display-3 title">{{weatherStatus}}</h3>
+        <h4 class="display-6 text-center">Location: {{city}}, {{region}}</h4>
       </div> 
-      {% for row in playlistData %}
-        {% if row['description'] == '' %}{% else %}
-        <div class="accordion" id="accordionExample"> 
-          <div class="headline" id="heading{{loop.index}}">
-            <img src="{{row['image']}}" class="playlist-image" width="15%" height="auto"/>
-            <h2 class="song">{{row['name']}}</h2>
-            <input type="checkbox" id="btnControl{{loop.index}}" class="btnControl"/>
-            <label for="btnControl{{loop.index}}" class="btnControl" data-bs-toggle="collapse" data-bs-target="#collapse{{loop.index}}" aria-expanded="true" aria-controls="heading{{loop.index}}"><img class="dropdown" src="/static/others/dropdown.svg" alt="dropdown"/></label>
-          </div>
-          <img class="seperator"src="/static/others/seperator.svg" alt="seperator" />
-          <div id="collapse{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="{{loop.index}}" data-bs-parent="#accordionExample">
-            <div class="accordion-body">
-              <p class="description">{{row['description']}}</p>  
-              <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer"><p>Link to Playlist</p></a>            
+      
+      <div class="row mt-4">
+        <h2 class="text-center mb-4">Weather-Inspired Playlists</h2>
+      </div>
+      
+      {% if currentPlaylist %}
+      <div class="row justify-content-center mb-4">
+        <div class="col-md-10">
+          <div class="current-playlist-card">
+            <h4 class="text-center mb-3">Now Playing: {{ currentPlaylist.name }}</h4>
+            <div class="text-center">
+              <iframe src="https://open.spotify.com/embed/playlist/{{ currentPlaylist.id }}" 
+                      width="100%" height="380" frameborder="0" 
+                      allowtransparency="true" allow="encrypted-media">
+              </iframe>
             </div>
           </div>
         </div>
-        {% endif %}
-      {% endfor %}
+      </div>
+      {% endif %}
+      
+      <div class="row">
+        {% for row in playlistData %}
+          {% if row['description'] == '' %}{% else %}
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100" {% if row['image'] != 'static/icons/default_playlist.svg' %}data-image-url="{{row['image']}}"{% endif %}>
+              <div class="playlist-header d-flex align-items-center p-3">
+                <div class="image-container" style="width: 80px; height: 80px; overflow: hidden;">
+                  <img src="{{row['image']}}" class="playlist-image" style="width: 100%; height: 100%; object-fit: cover;" alt="{{ row['name'] }}" crossorigin="anonymous"/>
+                </div>
+                <h5 class="card-title ms-3 mb-0">{{row['name']}}</h5>
+              </div>
+              <div class="card-body">
+                <p class="card-text">{{row['description']}}</p>
+              </div>
+              <div class="card-footer d-flex justify-content-between">
+                <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">View on Spotify</a>
+                <button class="btn btn-success play-button" data-playlist-id="{{ row['id'] }}">Play in App</button>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
     </section>
 
 {% endblock %}
 {% block script %}
 
+    <!-- Include Color Thief library for extracting dominant colors -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    
     <script>
-        let data = {};
-        $('#click').click(function (){
-        $.ajax({
-          type: 'GET',
-          url:'/playlist/<query>',
-          success: function (response) {
-            data = {
-              image: response.image,
-              name: response.name,
-            }
-            console.log(data)
-          }
-        })
-      })
+        // Set body attribute if a playlist is currently playing
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if currentPlaylist %}
+                document.body.setAttribute('data-has-playlist', 'true');
+            {% endif %}
+        });
+    
+        // Extract dominant color from playlist covers and apply to background
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorThief = new ColorThief();
+            const cards = document.querySelectorAll('.card[data-image-url]');
+            
+            {% if currentPlaylist and currentPlaylist.image %}
+                // If we have a current playlist with an image, prioritize that
+                const currentPlaylistImg = new Image();
+                currentPlaylistImg.crossOrigin = 'Anonymous';
+                currentPlaylistImg.src = "{{ currentPlaylist.image }}";
+                
+                currentPlaylistImg.onload = function() {
+                    try {
+                        const dominantColor = colorThief.getColor(currentPlaylistImg);
+                        const palette = colorThief.getPalette(currentPlaylistImg, 2);
+                        
+                        setThemeColors(dominantColor, palette[1]);
+                    } catch (e) {
+                        console.error('Error extracting color from current playlist:', e);
+                    }
+                };
+            {% else %}
+                // Otherwise try to use the first playlist with a valid image
+                if (cards.length > 0) {
+                    const firstCard = cards[0];
+                    const imgUrl = firstCard.getAttribute('data-image-url');
+                    const img = firstCard.querySelector('img');
+                    
+                    if (img.complete) {
+                        try {
+                            const dominantColor = colorThief.getColor(img);
+                            const palette = colorThief.getPalette(img, 2);
+                            
+                            setThemeColors(dominantColor, palette[1]);
+                        } catch (e) {
+                            console.error('Error extracting color:', e);
+                        }
+                    } else {
+                        img.addEventListener('load', function() {
+                            try {
+                                const dominantColor = colorThief.getColor(img);
+                                const palette = colorThief.getPalette(img, 2);
+                                
+                                setThemeColors(dominantColor, palette[1]);
+                            } catch (e) {
+                                console.error('Error extracting color after load:', e);
+                            }
+                        });
+                    }
+                }
+            {% endif %}
+            
+            // Set up click handlers for cards to change background on hover
+            cards.forEach(card => {
+                const img = card.querySelector('img');
+                
+                card.addEventListener('mouseenter', function() {
+                    if (img.complete) {
+                        try {
+                            const dominantColor = colorThief.getColor(img);
+                            const palette = colorThief.getPalette(img, 2);
+                            
+                            // Use the dominant color to update UI elements
+                            document.documentElement.style.setProperty('--hover-color', `rgb(${dominantColor.join(',')})`);
+                        } catch (e) {
+                            console.error('Error extracting hover color:', e);
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Function to set theme colors
+        function setThemeColors(primaryColor, secondaryColor) {
+            // Convert RGB arrays to CSS color strings
+            const primaryRgb = `rgb(${primaryColor.join(',')})`;
+            const secondaryRgb = `rgb(${secondaryColor.join(',')})`;
+            
+            // Apply colors to CSS variables
+            document.documentElement.style.setProperty('--playlist-color', primaryRgb);
+            document.documentElement.style.setProperty('--playlist-color-secondary', secondaryRgb);
+            
+            // Update button colors
+            document.querySelectorAll('.btn-success').forEach(btn => {
+                btn.style.backgroundColor = primaryRgb;
+            });
+            
+            console.log('Theme colors set to:', primaryRgb, secondaryRgb);
+        }
 
+        // Display location information if it's not already shown
+        document.addEventListener('DOMContentLoaded', function() {
+            const locationHeading = document.querySelector('.display-6.text-center');
+            
+            // If we have location info from the server, we're good
+            if (locationHeading && (locationHeading.textContent.includes('Unknown') || locationHeading.textContent.trim() === 'Location: ,')) {
+                // Try to get the location from localStorage and update via AJAX
+                const lat = localStorage.getItem('userLatitude');
+                const lng = localStorage.getItem('userLongitude');
+                
+                if (lat && lng) {
+                    fetch(`/api/weather?lat=${lat}&lng=${lng}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.city && data.region) {
+                                locationHeading.textContent = `Location: ${data.city}, ${data.region}`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating location:', error);
+                        });
+                }
+            }
+        });
+
+        // Handle playlist play button clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            const playButtons = document.querySelectorAll('.play-button');
+            
+            playButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const playlistId = this.getAttribute('data-playlist-id');
+                    
+                    // Send request to play this playlist
+                    fetch(`/play-playlist/${playlistId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Reload the page to show the embedded player
+                                window.location.reload();
+                            } else {
+                                alert('Could not play playlist: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error playing playlist:', error);
+                            alert('An error occurred while trying to play the playlist');
+                        });
+                });
+            });
+        });
     </script>
 
 {% endblock %}

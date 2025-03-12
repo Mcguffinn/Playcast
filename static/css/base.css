@@ -128,3 +128,108 @@ ul li {
 .container-fluid {
   padding-bottom: 2rem;
 }
+
+
+/* Playlist cards styling */
+body {
+  background: linear-gradient(135deg, var(--playlist-color, #6a1b9a) 0%, var(--playlist-color-secondary, #4a148c) 100%);
+  color: #fff;
+  min-height: 100vh;
+  transition: background 1.5s ease;
+}
+
+/* Default dark theme when no playlist is selected */
+body:not([data-has-playlist="true"]) {
+  --playlist-color: #2d1b4f;
+  --playlist-color-secondary: #1a0f2e;
+}
+
+/* Playlist cards styling - black and slightly transparent */
+.card {
+  background-color: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: rgb(51, 51, 51);
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Playlist header styling */
+.playlist-header {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-footer {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.image-container {
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* Button styling to match theme */
+.btn-outline-primary {
+  /* color: white; */
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-outline-primary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  /* border-color: white; */
+}
+
+.btn-success {
+  background-color: var(--playlist-color, #6a1b9a);
+  border-color: transparent;
+}
+
+.btn-success:hover {
+  background-color: var(--playlist-color-secondary, #4a148c);
+}
+
+/* Weather display styling */
+.weatherSVG {
+  max-width: 150px;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Current playlist container */
+.current-playlist-card {
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Embedded player styling */
+iframe {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .weatherSVG {
+    width: 40% !important;
+  }
+  
+  .image-container {
+    width: 60px !important;
+    height: 60px !important;
+  }
+}

@@ -7,7 +7,7 @@ from icecream import ic as debug
 from dotenv import load_dotenv
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Tuple
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -24,6 +24,67 @@ class Weather:
         session.mount('http://', adapter)
         session.mount('https://', adapter)
         return session
+
+    def get_location_from_browser(self) -> Dict[str, Any]:
+        """
+        Get location from browser coordinates
+        """
+        try:
+            # Get latitude and longitude from request parameters
+            lat = request.args.get('lat')
+            lng = request.args.get('lng')
+            
+            if not lat or not lng:
+                logger.warning("Browser coordinates not provided, falling back to IP geolocation")
+                return self.get_location_from_ip()
+            
+            logger.info(f"Using browser coordinates: {lat}, {lng}")
+            
+            # Try to get city, region, country information using reverse geocoding
+            # This is optional but helps with more informative UI
+            location_data = self.reverse_geocode(lat, lng)
+            
+            # Return location data with the browser coordinates
+            return {
+                "loc": f"{lat},{lng}",
+                "city": location_data.get("city", "Unknown"),
+                "region": location_data.get("region", "Unknown"),
+                "country": location_data.get("country", "Unknown"),
+                "timezone": location_data.get("timezone", "America/New_York")
+            }
+        except Exception as e:
+            logger.error(f"Error getting location from browser: {str(e)}")
+            return self.get_location_from_ip()
+
+    def reverse_geocode(self, lat: str, lng: str) -> Dict[str, str]:
+        """
+        Get location details from coordinates using a reverse geocoding service
+        """
+        try:
+            # Using IPInfo's reverse geocoding endpoint
+            url = "https://ipinfo.io/reverse-geocode"
+            params = {
+                "lat": lat,
+                "lon": lng,
+                "token": os.environ.get("IPINFO_KEY"),
+            }
+            
+            response = self.session.get(url, params=params, timeout=5)
+            response.raise_for_status()
+            location_data = response.json()
+            
+            if not location_data or "city" not in location_data:
+                return {"city": "Unknown", "region": "Unknown", "country": "Unknown", "timezone": "America/New_York"}
+                
+            return {
+                "city": location_data.get("city", "Unknown"),
+                "region": location_data.get("region", "Unknown"),
+                "country": location_data.get("country", "Unknown"),
+                "timezone": location_data.get("timezone", "America/New_York")
+            }
+        except Exception as e:
+            logger.error(f"Error in reverse geocoding: {str(e)}")
+            return {"city": "Unknown", "region": "Unknown", "country": "Unknown", "timezone": "America/New_York"}
 
     def get_client_ip(self) -> str:
         """
@@ -52,9 +113,9 @@ class Weather:
         logger.info(f"Using remote_addr: {request.remote_addr}")
         return request.remote_addr
 
-    def get_location(self) -> Dict[str, Any]:
+    def get_location_from_ip(self) -> Dict[str, Any]:
         """
-        Get location information with improved error handling
+        Get location information from IP address as fallback
         """
         try:
             user_ip = self.get_client_ip()
@@ -100,7 +161,8 @@ class Weather:
             start_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
             end_time = (now + timedelta(hours=5)).strftime("%Y-%m-%dT%H:%M:%SZ")
             
-            location_data = self.get_location()
+            # Use location from browser if available, otherwise fall back to IP
+            location_data = self.get_location_from_browser()
             logger.info(f"Building params with location data: {location_data}")
             
             fields = [
@@ -120,7 +182,7 @@ class Weather:
                 "timesteps": "1h",
                 "startTime": start_time,
                 "endTime": end_time,
-                "timezone": "America/New_York",
+                "timezone": location_data.get('timezone', "America/New_York"),
             }
             
             # Log params without API key

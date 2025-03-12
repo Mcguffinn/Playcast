@@ -41,8 +41,8 @@
       <div class="hero-section">
         <h3 class="display-1 title" >Pl<img src="static\others\trees.svg" style="width: 10%"/>ycast</h3>
         <p class="display-6 text-center">Get a recommended weather playlist forecast based on your location.</p>
-        <a class="button-group" href="/playcast">
-          <div  class="button">Get a Playcast </div>
+        <a class="button-group" href="/playcast" id="playcastBtn">
+          <div class="button">Get a Playcast</div>
         </a>
       </div> 
       {% block body %}
@@ -53,6 +53,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
+    <!-- Add location.js to all pages -->
+    <script src="{{ url_for('static', filename='js/location.js') }}"></script>
     {% block script %} 
     {% endblock %}
   </body>
