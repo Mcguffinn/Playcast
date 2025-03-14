@@ -1,215 +1,396 @@
 {% extends 'base.html' %}
 {% block body %}
 
-    <section class="container-fluid">
-      <div class="row">        
-        <img src="{{ weatherSVG }}" class="rounded mx-auto d-block weatherSVG" style="width: 25%"/>
+<section class="container-fluid">
+    <div class="row">
+        <img src="{{ weatherSVG }}" class="rounded mx-auto d-block weatherSVG" style="width: 25%" />
         <h3 class="display-2 title">The Weather is:</h3>
         <h3 class="display-3 title">{{temperature}}°F</h3>
         <h3 class="display-3 title">{{weatherStatus}}</h3>
         <h4 class="display-6 text-center">Location: {{city}}, {{region}}</h4>
-      </div> 
-      
-      <div class="row mt-4">
+    </div>
+
+    <div class="row mt-4">
         <h2 class="text-center mb-4">Weather-Inspired Playlists</h2>
-      </div>
-      
-      {% if currentPlaylist %}
-      <div class="row justify-content-center mb-4">
+    </div>
+
+    {% if currentPlaylist %}
+    <div class="row justify-content-center mb-4">
         <div class="col-md-10">
-          <div class="current-playlist-card">
-            <h4 class="text-center mb-3">Now Playing: {{ currentPlaylist.name }}</h4>
-            <div class="text-center">
-              <iframe src="https://open.spotify.com/embed/playlist/{{ currentPlaylist.id }}" 
-                      width="100%" height="380" frameborder="0" 
-                      allowtransparency="true" allow="encrypted-media">
-              </iframe>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-      
-      <div class="row">
-        {% for row in playlistData %}
-          {% if row['description'] == '' %}{% else %}
-          <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100" {% if row['image'] != 'static/icons/default_playlist.svg' %}data-image-url="{{row['image']}}"{% endif %}>
-              <div class="playlist-header d-flex align-items-center p-3">
-                <div class="image-container" style="width: 80px; height: 80px; overflow: hidden;">
-                  <img src="{{row['image']}}" class="playlist-image" style="width: 100%; height: 100%; object-fit: cover;" alt="{{ row['name'] }}" crossorigin="anonymous"/>
+            <div class="current-playlist-card">
+                <h4 class="text-center mb-3">Now Playing: {{ currentPlaylist.name }}</h4>
+                <!-- Hidden image for color extraction -->
+                <img src="{{ currentPlaylist.image }}" 
+                     id="currentPlaylistImage" 
+                     style="display: none;" 
+                     crossorigin="anonymous"/>
+                <div class="text-center">
+                    <iframe src="https://open.spotify.com/embed/playlist/{{ currentPlaylist.id }}" width="100%"
+                        height="380" frameborder="0" allowtransparency="true" allow="encrypted-media">
+                    </iframe>
                 </div>
-                <h5 class="card-title ms-3 mb-0">{{row['name']}}</h5>
-              </div>
-              <div class="card-body">
-                <p class="card-text">{{row['description']}}</p>
-              </div>
-              <div class="card-footer d-flex justify-content-between">
-                <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">View on Spotify</a>
-                <button class="btn btn-success play-button" data-playlist-id="{{ row['id'] }}">Play in App</button>
-              </div>
             </div>
-          </div>
-          {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        {% for row in playlistData %}
+        {% if row['description'] == '' %}{% else %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100" {% if row['image'] !='static/icons/default_playlist.svg'
+                %}data-image-url="{{row['image']}}" {% endif %}>
+                <div class="playlist-header d-flex align-items-center p-3">
+                    <div class="image-container" style="width: 80px; height: 80px; overflow: hidden;">
+                        <img src="{{row['image']}}" class="playlist-image"
+                            style="width: 100%; height: 100%; object-fit: cover;" alt="{{ row['name'] }}"
+                            crossorigin="anonymous" />
+                    </div>
+                    <h5 class="card-title ms-3 mb-0">{{row['name']}}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{row['description']}}</p>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{row['outurl']}}" target="_blank" rel="noopener noreferrer"
+                        class="btn btn-outline-primary">View on Spotify</a>
+                    <button class="btn btn-success play-button" data-playlist-id="{{ row['id'] }}">Play in App</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         {% endfor %}
-      </div>
-    </section>
+    </div>
+</section>
 
 {% endblock %}
 {% block script %}
 
-    <!-- Include Color Thief library for extracting dominant colors -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
-    
-    <script>
-        // Set body attribute if a playlist is currently playing
-        document.addEventListener('DOMContentLoaded', function() {
-            {% if currentPlaylist %}
-                document.body.setAttribute('data-has-playlist', 'true');
-            {% endif %}
-        });
-    
-        // Extract dominant color from playlist covers and apply to background
-        document.addEventListener('DOMContentLoaded', function() {
-            const colorThief = new ColorThief();
-            const cards = document.querySelectorAll('.card[data-image-url]');
-            
-            {% if currentPlaylist and currentPlaylist.image %}
-                // If we have a current playlist with an image, prioritize that
-                const currentPlaylistImg = new Image();
-                currentPlaylistImg.crossOrigin = 'Anonymous';
-                currentPlaylistImg.src = "{{ currentPlaylist.image }}";
-                
-                currentPlaylistImg.onload = function() {
-                    try {
-                        const dominantColor = colorThief.getColor(currentPlaylistImg);
-                        const palette = colorThief.getPalette(currentPlaylistImg, 2);
-                        
-                        setThemeColors(dominantColor, palette[1]);
-                    } catch (e) {
-                        console.error('Error extracting color from current playlist:', e);
-                    }
-                };
-            {% else %}
-                // Otherwise try to use the first playlist with a valid image
-                if (cards.length > 0) {
-                    const firstCard = cards[0];
-                    const imgUrl = firstCard.getAttribute('data-image-url');
-                    const img = firstCard.querySelector('img');
-                    
-                    if (img.complete) {
-                        try {
-                            const dominantColor = colorThief.getColor(img);
-                            const palette = colorThief.getPalette(img, 2);
-                            
-                            setThemeColors(dominantColor, palette[1]);
-                        } catch (e) {
-                            console.error('Error extracting color:', e);
-                        }
-                    } else {
-                        img.addEventListener('load', function() {
-                            try {
-                                const dominantColor = colorThief.getColor(img);
-                                const palette = colorThief.getPalette(img, 2);
-                                
-                                setThemeColors(dominantColor, palette[1]);
-                            } catch (e) {
-                                console.error('Error extracting color after load:', e);
-                            }
-                        });
-                    }
-                }
-            {% endif %}
-            
-            // Set up click handlers for cards to change background on hover
-            cards.forEach(card => {
-                const img = card.querySelector('img');
-                
-                card.addEventListener('mouseenter', function() {
-                    if (img.complete) {
-                        try {
-                            const dominantColor = colorThief.getColor(img);
-                            const palette = colorThief.getPalette(img, 2);
-                            
-                            // Use the dominant color to update UI elements
-                            document.documentElement.style.setProperty('--hover-color', `rgb(${dominantColor.join(',')})`);
-                        } catch (e) {
-                            console.error('Error extracting hover color:', e);
-                        }
-                    }
-                });
-            });
-        });
+<!-- Include Color Thief library for extracting dominant colors -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get ColorThief library
+        const colorThief = new ColorThief();
+        const cards = document.querySelectorAll('.card[data-image-url]');
         
         // Function to set theme colors
         function setThemeColors(primaryColor, secondaryColor) {
             // Convert RGB arrays to CSS color strings
             const primaryRgb = `rgb(${primaryColor.join(',')})`;
-            const secondaryRgb = `rgb(${secondaryColor.join(',')})`;
             
-            // Apply colors to CSS variables
+            // Create a more distinct secondary color for better gradients
+            // Using HSL conversion for better control over the secondary color
+            const r = primaryColor[0] / 255;
+            const g = primaryColor[1] / 255;
+            const b = primaryColor[2] / 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0; // achromatic
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                
+                if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+                else if (max === g) h = (b - r) / d + 2;
+                else h = (r - g) / d + 4;
+                
+                h /= 6;
+            }
+            
+            // Create a darker secondary color
+            const newL = Math.max(0, l - 0.2);
+            
+            // Convert back to RGB
+            function hslToRgb(h, s, l) {
+                let r, g, b;
+                
+                if (s === 0) {
+                    r = g = b = l; // achromatic
+                } else {
+                    const hue2rgb = (p, q, t) => {
+                        if (t < 0) t += 1;
+                        if (t > 1) t -= 1;
+                        if (t < 1/6) return p + (q - p) * 6 * t;
+                        if (t < 1/2) return q;
+                        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                        return p;
+                    };
+                    
+                    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    const p = 2 * l - q;
+                    
+                    r = hue2rgb(p, q, h + 1/3);
+                    g = hue2rgb(p, q, h);
+                    b = hue2rgb(p, q, h - 1/3);
+                }
+                
+                return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+            }
+            
+            const secondaryRgbArray = hslToRgb(h, s, newL);
+            const secondaryRgb = `rgb(${secondaryRgbArray.join(',')})`;
+            
+            // Apply colors to CSS variables at the :root level for global scope
             document.documentElement.style.setProperty('--playlist-color', primaryRgb);
             document.documentElement.style.setProperty('--playlist-color-secondary', secondaryRgb);
+            // Set a data attribute on body to indicate we've applied playlist colors
+            document.body.style.backgroundImage = `linear-gradient(0deg, ${secondaryRgb} 10%, ${primaryRgb} 100%)`;
+            document.body.setAttribute('data-has-playlist', 'true');
             
-            // Update button colors
+            // Update button colors and other elements
             document.querySelectorAll('.btn-success').forEach(btn => {
                 btn.style.backgroundColor = primaryRgb;
+                btn.style.borderColor = 'transparent';
             });
             
-            console.log('Theme colors set to:', primaryRgb, secondaryRgb);
+            document.querySelectorAll('.btn-outline-primary').forEach(btn => {
+                btn.style.borderColor = primaryRgb;
+            });
+            
+            // Update card borders on hover
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.borderColor = primaryRgb;
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.borderColor = 'transparent';
+                });
+            });
+            
+            // Apply to current playlist card if it exists
+            const currentPlaylistCard = document.querySelector('.current-playlist-card');
+            if (currentPlaylistCard) {
+                currentPlaylistCard.style.borderColor = primaryRgb;
+            }
+            
+            // Apply a subtle glow to the weather SVG
+            const weatherSVG = document.querySelector('.weatherSVG');
+            if (weatherSVG) {
+                weatherSVG.style.filter = `drop-shadow(0 0 10px ${primaryRgb})`;
+            }
+            
+            console.log('Theme colors applied:', primaryRgb, secondaryRgb);
         }
 
-        // Display location information if it's not already shown
-        document.addEventListener('DOMContentLoaded', function() {
-            const locationHeading = document.querySelector('.display-6.text-center');
+        // Check if we're on the playlist page (has a current playlist)
+        const currentPlaylistCard = document.querySelector('.current-playlist-card');
+        
+        // If we're on the playlist page, apply dynamic colors
+        if (currentPlaylistCard) {
+            const currentPlaylistImg = document.getElementById('currentPlaylistImage');
             
-            // If we have location info from the server, we're good
-            if (locationHeading && (locationHeading.textContent.includes('Unknown') || locationHeading.textContent.trim() === 'Location: ,')) {
-                // Try to get the location from localStorage and update via AJAX
-                const lat = localStorage.getItem('userLatitude');
-                const lng = localStorage.getItem('userLongitude');
-                
-                if (lat && lng) {
-                    fetch(`/api/weather?lat=${lat}&lng=${lng}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.city && data.region) {
-                                locationHeading.textContent = `Location: ${data.city}, ${data.region}`;
+            if (currentPlaylistImg) {
+                const handleImageLoad = () => {
+                    try {
+                        const colorPalette = colorThief.getPalette(currentPlaylistImg, 5);
+                        
+                        // Find the most vibrant color in the palette
+                        let mostVibrantColor = colorPalette[0];
+                        let highestSaturation = 0;
+                        
+                        for (let color of colorPalette) {
+                            // Convert to HSL to find saturation
+                            const r = color[0] / 255;
+                            const g = color[1] / 255;
+                            const b = color[2] / 255;
+                            
+                            const max = Math.max(r, g, b);
+                            const min = Math.min(r, g, b);
+                            const l = (max + min) / 2;
+                            
+                            let s;
+                            if (max === min) {
+                                s = 0; // achromatic
+                            } else {
+                                const d = max - min;
+                                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
                             }
-                        })
-                        .catch(error => {
-                            console.error('Error updating location:', error);
-                        });
+                            
+                            if (s > highestSaturation) {
+                                highestSaturation = s;
+                                mostVibrantColor = color;
+                            }
+                        }
+                        
+                        const dominantColor = mostVibrantColor;
+                        setThemeColors(dominantColor, null);
+                    } catch (e) {
+                        console.error('Error extracting color:', e);
+                    }
+                };
+
+                if (currentPlaylistImg.complete) {
+                    handleImageLoad();
+                } else {
+                    currentPlaylistImg.addEventListener('load', handleImageLoad);
                 }
+            }
+        }
+        
+        // Set up hover effects for cards with enhanced color extraction
+        cards.forEach(card => {
+            const img = card.querySelector('img');
+            
+            if (img) {
+                card.addEventListener('mouseenter', function() {
+                    if (img.complete && img.naturalWidth > 0) {
+                        try {
+                            const dominantColor = colorThief.getColor(img);
+                            card.style.borderColor = `rgb(${dominantColor.join(',')})`;
+                            card.style.boxShadow = `0 8px 16px rgba(0, 0, 0, 0.4), 0 0 10px rgb(${dominantColor.join(',')})`;
+                        } catch (e) {
+                            console.error('Error extracting hover color:', e);
+                        }
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    card.style.borderColor = 'transparent';
+                    card.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                });
+                
+                // Add click event to dynamically update theme colors when clicking a playlist card
+                card.addEventListener('click', function(e) {
+                    // Only extract colors if not clicking on buttons
+                    if (!e.target.classList.contains('btn') && !e.target.closest('.btn')) {
+                        if (img.complete && img.naturalWidth > 0) {
+                            try {
+                                const dominantColor = colorThief.getColor(img);
+                                setThemeColors(dominantColor, null);
+                            } catch (e) {
+                                console.error('Error extracting color on click:', e);
+                            }
+                        }
+                    }
+                });
             }
         });
 
-        // Handle playlist play button clicks
-        document.addEventListener('DOMContentLoaded', function() {
-            const playButtons = document.querySelectorAll('.play-button');
-            
-            playButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const playlistId = this.getAttribute('data-playlist-id');
-                    
-                    // Send request to play this playlist
-                    fetch(`/play-playlist/${playlistId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // Reload the page to show the embedded player
-                                window.location.reload();
-                            } else {
-                                alert('Could not play playlist: ' + data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error playing playlist:', error);
-                            alert('An error occurred while trying to play the playlist');
-                        });
+        async function safeFetch(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
                 });
+                
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${error.slice(0, 100)}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Network error:', error);
+                throw new Error(`Failed to connect: ${error.message}`);
+            }
+        }
+        // Handle playlist play button clicks
+        const playButtons = document.querySelectorAll('.play-button');
+
+        playButtons.forEach(button => {
+            button.addEventListener('click', async function() {
+                const playlistId = this.dataset.playlistId;
+                const originalText = this.innerHTML;
+                
+                try {
+                    // Disable button and show loading state
+                    this.disabled = true;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Loading';
+                    
+                    // Extract colors from image
+                    const card = this.closest('.card');
+                    if (card) {
+                        const img = card.querySelector('img');
+                        if (img && img.complete) {
+                            try {
+                                const palette = colorThief.getPalette(img, 5);
+                                
+                                // Sort colors by vibrancy (RGB range)
+                                const primaryColor = palette.sort((a, b) => {
+                                    const vibrancyA = Math.max(...a) - Math.min(...a);
+                                    const vibrancyB = Math.max(...b) - Math.min(...b);
+                                    return vibrancyB - vibrancyA;
+                                })[0];
+                                
+                                setThemeColors(primaryColor, null);
+                            } catch (e) {
+                                console.error('Color extraction error:', e);
+                            }
+                        }
+                    }
+
+                    // API request with timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    
+                    const data = await safeFetch(`/play-playlist/${playlistId}`, {
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.message || 'Unknown server error');
+                    }
+
+                    // Smooth transition to updated page
+                    window.location.href = `/playcast?refresh=${Date.now()}`;
+
+                } catch (error) {
+                    console.error('Playback error:', error);
+                    // Show error without alert
+                    const errorBanner = document.createElement('div');
+                    errorBanner.className = 'alert alert-danger position-fixed top-0 start-50 translate-middle-x mt-3';
+                    errorBanner.role = 'alert';
+                    errorBanner.innerHTML = `
+                        ${error.message} 
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.body.prepend(errorBanner);
+                    
+                    // Auto-dismiss after 5 seconds
+                    setTimeout(() => errorBanner.remove(), 5000);
+                    
+                } finally {
+                    this.disabled = false;
+                    this.innerHTML = originalText;
+                }
             });
         });
-    </script>
+
+        // Display location information if it's not already shown
+        const locationHeading = document.querySelector('.display-6.text-center');
+
+        // If we have location info from the server, we're good
+        if (locationHeading && (locationHeading.textContent.includes('Unknown') || locationHeading.textContent.trim() === 'Location: ,')) {
+            // Try to get the location from localStorage and update via AJAX
+            const lat = localStorage.getItem('userLatitude');
+            const lng = localStorage.getItem('userLongitude');
+
+            if (lat && lng) {
+                fetch(`/api/weather?lat=${lat}&lng=${lng}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.city && data.region) {
+                            locationHeading.textContent = `Location: ${data.city}, ${data.region}`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating location:', error);
+                    });
+            }
+        }
+    });
+</script>
 
 {% endblock %}

@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 from typing import Dict, Any, Optional, Tuple
+from flask import request, session
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +26,7 @@ class Weather:
         session.mount('https://', adapter)
         return session
 
+    # In weatherApi.py, modify the get_location_from_browser method
     def get_location_from_browser(self) -> Dict[str, Any]:
         """
         Get location from browser coordinates
@@ -34,6 +36,12 @@ class Weather:
             lat = request.args.get('lat')
             lng = request.args.get('lng')
             
+            # Also check session for lat/lng if not in request params
+            if not lat and 'user_lat' in session:
+                lat = session.get('user_lat')
+            if not lng and 'user_lng' in session:
+                lng = session.get('user_lng')
+            
             if not lat or not lng:
                 logger.warning("Browser coordinates not provided, falling back to IP geolocation")
                 return self.get_location_from_ip()
@@ -41,7 +49,6 @@ class Weather:
             logger.info(f"Using browser coordinates: {lat}, {lng}")
             
             # Try to get city, region, country information using reverse geocoding
-            # This is optional but helps with more informative UI
             location_data = self.reverse_geocode(lat, lng)
             
             # Return location data with the browser coordinates
@@ -61,26 +68,36 @@ class Weather:
         Get location details from coordinates using a reverse geocoding service
         """
         try:
-            # Using IPInfo's reverse geocoding endpoint
-            url = "https://ipinfo.io/reverse-geocode"
+            url = "https://nominatim.openstreetmap.org/reverse"
             params = {
                 "lat": lat,
                 "lon": lng,
-                "token": os.environ.get("IPINFO_KEY"),
+                "format": "json",
+                "addressdetails": 1,
+                "zoom": 10
             }
             
-            response = self.session.get(url, params=params, timeout=5)
+            headers = {
+                "User-Agent": "PlaycastApp/1.0"  # Required by Nominatim
+            }
+            
+            response = self.session.get(url, params=params, headers=headers, timeout=5)
             response.raise_for_status()
             location_data = response.json()
             
-            if not location_data or "city" not in location_data:
+            if not location_data or "address" not in location_data:
                 return {"city": "Unknown", "region": "Unknown", "country": "Unknown", "timezone": "America/New_York"}
-                
+            
+            address = location_data["address"]
+            
+            # Try different fields for city name based on what's available
+            city = address.get("city") or address.get("town") or address.get("village") or "Unknown"
+            
             return {
-                "city": location_data.get("city", "Unknown"),
-                "region": location_data.get("region", "Unknown"),
-                "country": location_data.get("country", "Unknown"),
-                "timezone": location_data.get("timezone", "America/New_York")
+                "city": city,
+                "region": address.get("state", "Unknown"),
+                "country": address.get("country", "Unknown"),
+                "timezone": "America/New_York"  # Would need a separate timezone API
             }
         except Exception as e:
             logger.error(f"Error in reverse geocoding: {str(e)}")
@@ -90,26 +107,30 @@ class Weather:
         """
         Get client IP address with improved header handling for Render.com deployment
         """
-        headers_debug = {
-            'X-Forwarded-For': request.headers.get('X-Forwarded-For'),
-            'CF-Connecting-IP': request.headers.get('CF-Connecting-IP'),
-            'Remote-Addr': request.remote_addr
-        }
-        logger.info(f"Request headers: {headers_debug}")
-
-        # Use CF-Connecting-IP as it's the most reliable for actual client IP
-        if cf_ip := request.headers.get('CF-Connecting-IP'):
-            logger.info(f"Using CF-Connecting-IP: {cf_ip}")
-            return cf_ip
+        headers_to_check = [
+        'CF-Connecting-IP',
+        'X-Forwarded-For',
+        'X-Real-IP', 
+        'X-Client-IP',
+        'X-Forwarded',
+        'Forwarded-For',
+        'Forwarded',
+        'True-Client-IP'
+        ]
         
-        # Fallback to first IP in X-Forwarded-For
-        if x_forwarded_for := request.headers.get('X-Forwarded-For'):
-            # Split on commas and get the first IP (client IP)
-            client_ip = x_forwarded_for.split(',')[0].strip()
-            logger.info(f"Using first X-Forwarded-For IP: {client_ip}")
-            return client_ip
-
-        # Last resort: use remote_addr
+        # Log all headers for debugging
+        logger.info(f"Headers: {dict(request.headers)}")
+        
+        for header in headers_to_check:
+            if header in request.headers:
+                value = request.headers[header]
+                logger.info(f"Using {header}: {value}")
+                if header == 'X-Forwarded-For':
+                    # Extract first IP from potentially comma-separated list
+                    return value.split(',')[0].strip()
+                return value
+        
+        # Last resort
         logger.info(f"Using remote_addr: {request.remote_addr}")
         return request.remote_addr
 

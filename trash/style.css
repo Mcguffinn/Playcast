@@ -1,0 +1,217 @@
+:root {
+    /* Theme colors - dynamically updated by JS */
+    --playlist-color: #6a1b9a;
+    --playlist-color-secondary: #4a148c;
+    --text-color: #fff;
+    --card-bg: rgba(17, 16, 16, 0.9); /* Dark card background as requested */
+    --card-header-bg: rgba(0, 0, 0, 0.4);
+    --card-footer-bg: rgba(0, 0, 0, 0.4);
+    --button-gradient: linear-gradient(180deg, rgba(188.77, 36.48, 213.56, 0.8) 14.06%, rgba(35.79, 76.94, 182.75, 0.77) 83.33%);
+    
+    /* Layout variables */
+    --spacing: 2rem;
+    --border-radius: 10px;
+  }
+  
+  /* Base styling */
+  body {
+    background: linear-gradient(135deg, var(--playlist-color) 0%, var(--playlist-color-secondary) 100%);
+    color: var(--text-color);
+    min-height: 100vh;
+    transition: background 1.5s ease;
+  }
+  
+  /* Default background when no playlist selected */
+  body:not([data-has-playlist="true"]) {
+    --playlist-color: #2d1b4f;
+    --playlist-color-secondary: #1a0f2e;
+  }
+  
+  /* Container and hero section */
+  .container {
+    padding: 0;
+    padding-top: 3rem;
+    min-height: 100vh;
+  }
+  
+  .hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  /* Typography */
+  .title {
+    color: var(--text-color);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
+    text-align: center;
+    padding-bottom: 2rem;
+    padding-top: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .text-center {
+    color: var(--text-color);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: normal;
+    text-align: center;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Button styling */
+  .button-group {
+    background: var(--button-gradient);
+    border-radius: var(--border-radius);
+    height: 3rem;
+    width: 180px;
+    text-align: center;
+    margin-top: 1.5rem;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .button {
+    color: var(--text-color);
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0;
+  }
+  
+  .button-group:hover {
+    background: linear-gradient(180deg, rgba(150, 30, 170, 0.9) 14.06%, rgba(30, 60, 150, 0.9) 83.33%);
+  }
+  
+  .btn-outline-primary {
+    color: var(--text-color);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+  }
+  
+  .btn-success {
+    background-color: var(--playlist-color);
+    border-color: transparent;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-success:hover {
+    background-color: var(--playlist-color-secondary);
+  }
+  
+  /* Header and navigation */
+  header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    padding: 40px 0;
+    z-index: 1000;
+  }
+  
+  .socials {
+    padding: 2rem;
+  }
+  
+  ul {
+    display: flex;
+    flex-direction: row-reverse;
+    list-style: none;
+    padding: 0;
+  }
+  
+  ul li {
+    display: inline-block;
+    filter: invert(1);
+    margin: 0 1rem;
+  }
+  
+  /* Playlist cards styling */
+  .card {
+    background-color: var(--card-bg);
+    border: none;
+    color: var(--text-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 1.5rem;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  .playlist-header {
+    background-color: var(--card-header-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .card-footer {
+    background-color: var(--card-footer-bg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .image-container {
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .playlist-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Weather display */
+  .weatherSVG {
+    max-width: 150px;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+  }
+  
+  /* Current playlist styling */
+  .current-playlist-card {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  iframe {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Container fluid override */
+  .container-fluid {
+    padding-bottom: 2rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .weatherSVG {
+      width: 40% !important;
+    }
+    
+    .image-container {
+      width: 60px !important;
+      height: 60px !important;
+    }
+    
+    .button-group {
+      width: 150px;
+    }
+  }
