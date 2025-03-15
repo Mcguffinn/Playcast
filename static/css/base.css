@@ -96,8 +96,8 @@ ul li {
   white-space: nowrap;
   text-align: var(--t-align);
   width: 576px;
-  padding-bottom: var(--spacing);
-  padding-top: var(--spacing);
+  /* padding-bottom: var(--spacing);
+  padding-top: var(--spacing); */
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -105,11 +105,11 @@ ul li {
   color: var(--text);
   font-weight: var(--weight);
   letter-spacing: 0;
-  line-height: normal;
+  /* line-height: normal;
   margin-right: 16px;
   margin-top: 54px;
   text-align: var(--t-align);
-  padding: var(--spacing);
+  padding: var(--spacing); */
 }
 
 /* Button Styling */
@@ -321,7 +321,7 @@ td img {
 /* Weather Display Styling */
 .weatherSVG {
   max-width: 150px;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
   filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
 }
 

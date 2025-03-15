@@ -202,10 +202,10 @@ function updateServerWithLocation(latitude, longitude) {
 // Update any location-dependent elements on the page
 function updatePageWithLocationData(data) {
     // Update location display if it exists
-    const locationHeading = document.querySelector('.display-6.text-center');
-    if (locationHeading && data.city && data.region) {
-        locationHeading.textContent = `Location: ${data.city}, ${data.region}`;
-    }
+    // const locationHeading = document.querySelector('.display-6.text-center');
+    // if (locationHeading && data.city && data.region) {
+    //     locationHeading.textContent = `Location: ${data.city}, ${data.region}`;
+    // }
     
     // Update weather info if present on the page
     const weatherStatus = document.querySelector('.display-3.title:last-of-type');
