@@ -86,6 +86,7 @@ ul li {
   flex-direction: column;
 }
 
+/* Title Card */
 .title {
   color: var(--text);
   font-weight: 400;
