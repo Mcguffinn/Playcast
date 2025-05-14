@@ -7,15 +7,6 @@ itsdangerous==2.2.0
 click==8.1.7
 blinker==1.9.0
 
-# HTTP and networking
-urllib3==1.26.16
-requests==2.27.1
-certifi==2024.8.30
-charset-normalizer==3.4.0
-idna==3.10
-
 # Utilities
 python-dotenv==1.0.1
-six==1.16.0
-colorama==0.4.6
 gunicorn==23.0.0 

@@ -14,7 +14,7 @@ A web application that provides weather-based Spotify playlist recommendations.
 
 - A Vercel account
 - Spotify API credentials (CLIENT_ID and CLIENT_SECRET)
-- Weather API credentials
+- Weather API credentials: [Tomorrow.io API key](https://app.tomorrow.io/)
 
 ### Deploying to Vercel
 
@@ -23,7 +23,7 @@ A web application that provides weather-based Spotify playlist recommendations.
    - `CLIENT_ID`: Your Spotify API client ID
    - `CLIENT_SECERET`: Your Spotify API client secret
    - `SECRET_KEY`: A secret key for Flask session
-   - Other API keys for weather services as needed
+   - `TOMORROW_IO_API_KEY`: Your Tomorrow.io API key for weather data
 
 3. Deploy the application
    - Vercel will automatically detect the project as a Python application
