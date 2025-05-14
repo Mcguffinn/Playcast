@@ -7,8 +7,19 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import base64
+import logging
 from datetime import datetime
 from flask import Flask, jsonify, request, render_template, redirect, make_response, session, url_for, send_from_directory
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger('playcast')
+
+# Log startup information
+logger.info("Starting Playcast application")
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -50,21 +61,22 @@ def fetch_json_data(url, timeout=5):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Playcast Weather App'
         }
+        logger.info(f"Fetching data from: {url}")
         req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=timeout) as response:
             data = response.read().decode('utf-8')
             return json.loads(data)
     except urllib.error.URLError as e:
-        print(f"URL Error: {e}")
+        logger.error(f"URL Error fetching {url}: {e}")
         return None
     except urllib.error.HTTPError as e:
-        print(f"HTTP Error: {e.code} - {e.reason}")
+        logger.error(f"HTTP Error fetching {url}: {e.code} - {e.reason}")
         return None
     except json.JSONDecodeError as e:
-        print(f"JSON Decode Error: {e}")
+        logger.error(f"JSON Decode Error for {url}: {e}")
         return None
     except Exception as e:
-        print(f"Unexpected error fetching data: {e}")
+        logger.error(f"Unexpected error fetching {url}: {e}", exc_info=True)
         return None
 
 # Weather API function that uses urllib instead of requests
@@ -74,34 +86,59 @@ def get_real_weather(lat=None, lng=None):
         if not lat or not lng:
             lat = "28.5383"
             lng = "-81.3792"
+            logger.info("Using default coordinates for Orlando, FL")
+        else:
+            logger.info(f"Getting weather for coordinates: {lat}, {lng}")
         
         # Get your API key from environment or use a test key
         api_key = os.environ.get("TOMORROW_IO_API_KEY")
         if not api_key:
-            print("No Tomorrow.io API key found, using mock weather data")
+            logger.warning("No Tomorrow.io API key found, using mock weather data")
             return ("static/icons/clear_day.svg", "75", "Clear")
         
         # Tomorrow.io API URL
-        url = f"https://api.tomorrow.io/v4/weather/realtime?location={lat},{lng}&apikey={api_key}"
+        url = f"https://api.tomorrow.io/v4/weather/realtime?location={lat},{lng}&apikey={api_key}&units=imperial"
         
         data = fetch_json_data(url)
         if not data:
-            print("Failed to fetch weather data")
+            logger.error("Failed to fetch weather data from Tomorrow.io")
             return ("static/icons/clear_day.svg", "75", "Clear")
         
         # Extract weather data
-        weather_code = data.get("data", {}).get("values", {}).get("weatherCode")
-        temperature = data.get("data", {}).get("values", {}).get("temperature")
+        weather_values = data.get("data", {}).get("values", {})
+        weather_code = weather_values.get("weatherCode")
+        temperature = weather_values.get("temperature")
+        
+        logger.info(f"Raw weather data - Code: {weather_code}, Temp: {temperature}")
+        
+        # Ensure temperature is in Fahrenheit and is a reasonable value
+        if temperature is not None:
+            try:
+                temp_float = float(temperature)
+                if temp_float < -50 or temp_float > 150:  # Implausible temperature, might be wrong units
+                    logger.warning(f"Implausible temperature {temp_float}, converting from C to F")
+                    # Convert from Celsius to Fahrenheit if needed
+                    temp_float = (temp_float * 9/5) + 32
+                temperature = str(int(round(temp_float)))
+                logger.info(f"Processed temperature: {temperature}°F")
+            except (ValueError, TypeError) as e:
+                logger.error(f"Error processing temperature: {e}")
+                temperature = "75"  # Default fallback
+        else:
+            logger.warning("No temperature value in API response")
+            temperature = "75"  # Default fallback
         
         # If weather code is not in our mapping, default to Clear
         if weather_code not in WEATHER_INFO:
-            return ("static/icons/clear_day.svg", str(temperature), "Clear")
+            logger.warning(f"Weather code {weather_code} not found in mapping")
+            return ("static/icons/clear_day.svg", temperature, "Clear")
         
         # Get weather info from mapping
         weather_info = WEATHER_INFO[weather_code]
-        return (weather_info[1], str(temperature), weather_info[0])
+        logger.info(f"Final weather: {weather_info[0]}, {temperature}°F")
+        return (weather_info[1], temperature, weather_info[0])
     except Exception as e:
-        print(f"Error getting weather: {str(e)}")
+        logger.error(f"Error getting weather: {str(e)}", exc_info=True)
         # Return default in case of error
         return ("static/icons/clear_day.svg", "75", "Clear")
 
@@ -147,25 +184,46 @@ def handle_options():
 # Mock playlist data for demonstration
 SAMPLE_PLAYLISTS = [
     {
-        "image": "https://i.scdn.co/image/ab67706c0000da84c0b5f1c90bb3d3fee05ab25d",
+        "image": "https://i.scdn.co/image/ab67706c0000da84fcbdf5a992dd5ef362945fa6",
         "name": "Sunny Day Playlist",
         "description": "Bright tunes for a sunny day",
         "outurl": "https://open.spotify.com/playlist/37i9dQZF1DX6P1Nck3wgwJ",
         "id": "37i9dQZF1DX6P1Nck3wgwJ"
     },
     {
-        "image": "https://i.scdn.co/image/ab67706c0000da84fc2129f9e2ff6df521158fcf",
+        "image": "https://i.scdn.co/image/ab67706c0000da84fbc971ee585ea0cddd2c6fa5",
         "name": "Rainy Day Vibes",
         "description": "Perfect for watching raindrops on your window",
         "outurl": "https://open.spotify.com/playlist/37i9dQZF1DXbvABJXBIyiY",
         "id": "37i9dQZF1DXbvABJXBIyiY"
     },
     {
-        "image": "https://i.scdn.co/image/ab67706c0000da8491a75738158f9c42e53a0bce",
+        "image": "https://i.scdn.co/image/ab67706c0000da84a457c95c635a5b6c191d29b1",
         "name": "Cloudy Day Tunes",
         "description": "Mellow tracks for overcast skies",
         "outurl": "https://open.spotify.com/playlist/37i9dQZF1DX4E3UdUs7fUx",
         "id": "37i9dQZF1DX4E3UdUs7fUx"
+    },
+    {
+        "image": "https://i.scdn.co/image/ab67706c0000da8463bd9b6a1c7b06412839d22c",
+        "name": "Clear Day Classics",
+        "description": "Classic tracks for clear blue skies",
+        "outurl": "https://open.spotify.com/playlist/37i9dQZF1DX1X23oiQRTB5",
+        "id": "37i9dQZF1DX1X23oiQRTB5"
+    },
+    {
+        "image": "https://i.scdn.co/image/ab67706c0000da84e0d2d1bc8e4da6f7d3a73155",
+        "name": "Foggy Morning Mix",
+        "description": "Atmospheric music for misty days",
+        "outurl": "https://open.spotify.com/playlist/37i9dQZF1DXdwTUxmGKrdN",
+        "id": "37i9dQZF1DXdwTUxmGKrdN"
+    },
+    {
+        "image": "https://i.scdn.co/image/ab67706c0000da84df9a1fda61d9a48d2ef494c9",
+        "name": "Snowy Day Soundtracks",
+        "description": "Cozy tunes for snow days",
+        "outurl": "https://open.spotify.com/playlist/37i9dQZF1DX4H7FFUM2osB",
+        "id": "37i9dQZF1DX4H7FFUM2osB"
     }
 ]
 
@@ -297,8 +355,10 @@ def get_spotify_playlists(query):
         client_secret = os.environ.get("CLIENT_SECERET")
         
         if not client_id or not client_secret:
-            print("No Spotify credentials found, using sample playlists")
+            logger.warning("No Spotify credentials found, using sample playlists")
             return None
+        
+        logger.info(f"Fetching Spotify playlists for query: {query}")
         
         # Get an access token first
         token_url = "https://accounts.spotify.com/api/token"
@@ -319,39 +379,91 @@ def get_spotify_playlists(query):
         )
         
         # Get the token
-        with urllib.request.urlopen(token_req) as token_response:
-            token_data = json.loads(token_response.read().decode('utf-8'))
-            access_token = token_data.get('access_token')
-            
-            if not access_token:
-                print("Failed to get Spotify access token")
-                return None
+        try:
+            with urllib.request.urlopen(token_req) as token_response:
+                token_data = json.loads(token_response.read().decode('utf-8'))
+                access_token = token_data.get('access_token')
                 
-            # Now search for playlists
-            search_url = f"https://api.spotify.com/v1/search?q={urllib.parse.quote(query)}&type=playlist&limit=12"
-            search_headers = {
-                "Authorization": f"Bearer {access_token}"
-            }
-            
-            search_req = urllib.request.Request(search_url, headers=search_headers)
-            
-            with urllib.request.urlopen(search_req) as search_response:
-                search_data = json.loads(search_response.read().decode('utf-8'))
-                return search_data.get('playlists', {}).get('items', [])
+                if not access_token:
+                    logger.error("Failed to get Spotify access token")
+                    return None
+                    
+                logger.info("Successfully obtained Spotify access token")
                 
+                # Now search for playlists
+                encoded_query = urllib.parse.quote(query)
+                search_url = f"https://api.spotify.com/v1/search?q={encoded_query}&type=playlist&limit=12"
+                search_headers = {
+                    "Authorization": f"Bearer {access_token}"
+                }
+                
+                search_req = urllib.request.Request(search_url, headers=search_headers)
+                
+                with urllib.request.urlopen(search_req) as search_response:
+                    search_data = json.loads(search_response.read().decode('utf-8'))
+                    playlists = search_data.get('playlists', {}).get('items', [])
+                    logger.info(f"Found {len(playlists)} playlists for query: {query}")
+                    return playlists
+        except urllib.error.HTTPError as e:
+            logger.error(f"HTTP error accessing Spotify API: {e.code} - {e.reason}")
+            # Handle expired tokens, bad requests, etc.
+            return None
+                    
     except Exception as e:
-        print(f"Error fetching Spotify playlists: {str(e)}")
+        logger.error(f"Error fetching Spotify playlists: {str(e)}", exc_info=True)
+        return None
+
+# Process playlist data to ensure working image URLs
+def process_playlist_item(item):
+    """Process a playlist item to ensure working image URLs and complete data"""
+    try:
+        # Get the image - ensure it's a working URL
+        image = "static/icons/default_playlist.svg"
+        if item.get("images") and len(item["images"]) > 0:
+            img = item["images"][0].get("url", "")
+            if img and (img.startswith("http://") or img.startswith("https://")):
+                image = img
+                logger.debug(f"Using image URL: {image}")
+            else:
+                logger.warning(f"Invalid image URL: {img}, using default")
+        
+        # Get the name
+        name = item.get("name", "Unnamed Playlist")
+        
+        # Get the URL and ID
+        external_urls = item.get("external_urls", {})
+        outurl = external_urls.get("spotify", "https://open.spotify.com")
+        
+        # Extract playlist ID from URL
+        playlist_id = outurl.split("/")[-1] if "/" in outurl else outurl
+        
+        # Get description
+        description = item.get("description", "No description available")
+        
+        # Return complete item
+        return {
+            "image": image,
+            "name": name,
+            "description": description,
+            "outurl": outurl,
+            "id": playlist_id
+        }
+    except Exception as e:
+        logger.error(f"Error processing playlist item: {str(e)}", exc_info=True)
         return None
 
 @app.route("/playlist/<query>")
 def get_playlist_data(query):
     """Return playlist data for a given weather type"""
     try:
+        logger.info(f"Playlist request for query: {query}")
+        
         # Try to get real Spotify playlists
         spotify_playlists = get_spotify_playlists(query)
         
         # If we couldn't get real playlists, use sample data
         if not spotify_playlists:
+            logger.info(f"Using sample playlists for query: {query}")
             playlists = SAMPLE_PLAYLISTS.copy()
             random.shuffle(playlists)
             
@@ -359,52 +471,40 @@ def get_playlist_data(query):
             if playlists:
                 playlists[0]["name"] = f"{query.title()} Day Playlist"
                 playlists[0]["description"] = f"Perfect for {query.lower()} weather"
+                logger.info(f"Customized first sample playlist for: {query}")
             
             return playlists
             
         # Process real Spotify playlists
         processed_playlists = []
         for item in spotify_playlists:
-            try:
-                # Get the image
-                image = "static/icons/default_playlist.svg"
-                if item.get("images") and len(item["images"]) > 0:
-                    image = item["images"][0].get("url", image)
-                
-                # Get the name
-                name = item.get("name", "Unnamed Playlist")
-                
-                # Get the URL and ID
-                external_urls = item.get("external_urls", {})
-                outurl = external_urls.get("spotify", "https://open.spotify.com")
-                
-                # Extract playlist ID from URL
-                playlist_id = outurl.split("/")[-1] if "/" in outurl else outurl
-                
-                # Get description
-                description = item.get("description", "No description available")
-                
-                processed_playlists.append({
-                    "image": image,
-                    "name": name,
-                    "description": description,
-                    "outurl": outurl,
-                    "id": playlist_id
-                })
-            except Exception as e:
-                print(f"Error processing playlist item: {str(e)}")
+            processed_item = process_playlist_item(item)
+            if processed_item:
+                processed_playlists.append(processed_item)
                 
         # Limit to 9 playlists
         if len(processed_playlists) > 9:
             processed_playlists = processed_playlists[:9]
+            logger.info(f"Limited to 9 playlists from {len(processed_playlists)} results")
             
         # If no playlists were processed, fall back to sample data
         if not processed_playlists:
-            return SAMPLE_PLAYLISTS
+            logger.warning(f"No playlists could be processed for {query}, using samples")
+            # Return a copy of the samples to avoid modifying the original
+            sample_copy = []
+            for item in SAMPLE_PLAYLISTS:
+                sample_copy.append(item.copy())
+            return sample_copy
+        
+        logger.info(f"Returning {len(processed_playlists)} real playlists for query: {query}")
+        
+        # Log the first few playlists for debugging
+        for i, playlist in enumerate(processed_playlists[:3]):
+            logger.info(f"Playlist {i+1}: {playlist['name']} | Image: {playlist['image'][:50]}...")
             
         return processed_playlists
     except Exception as e:
-        print(f"Error in get_playlist_data: {str(e)}")
+        logger.error(f"Error in get_playlist_data: {str(e)}", exc_info=True)
         return [{
             "image": "static/icons/default_playlist.svg",
             "name": "Error finding playlists",
@@ -657,6 +757,127 @@ def status():
         "framework": "Flask",
         "python_version": sys.version,
     })
+
+@app.route("/api/diagnostic")
+def diagnostic():
+    """Run diagnostics on the APIs and connections"""
+    results = {
+        "timestamp": datetime.now().isoformat(),
+        "app_status": "operational",
+        "tests": {}
+    }
+    
+    # Test Tomorrow.io Weather API
+    try:
+        logger.info("Testing Tomorrow.io Weather API")
+        api_key = os.environ.get("TOMORROW_IO_API_KEY")
+        if not api_key:
+            results["tests"]["weather_api"] = {
+                "status": "warning",
+                "message": "Tomorrow.io API key not found in environment variables"
+            }
+        else:
+            # Test the API with a fixed location (Orlando, FL)
+            url = f"https://api.tomorrow.io/v4/weather/realtime?location=28.5383,-81.3792&apikey={api_key}&units=imperial"
+            data = fetch_json_data(url)
+            
+            if data:
+                temp = data.get("data", {}).get("values", {}).get("temperature")
+                results["tests"]["weather_api"] = {
+                    "status": "operational",
+                    "message": f"Successfully fetched weather data. Current temperature in Orlando: {temp}°F"
+                }
+            else:
+                results["tests"]["weather_api"] = {
+                    "status": "error",
+                    "message": "Failed to fetch data from Tomorrow.io API"
+                }
+    except Exception as e:
+        logger.error(f"Weather API test failed: {str(e)}", exc_info=True)
+        results["tests"]["weather_api"] = {
+            "status": "error",
+            "message": f"Error testing weather API: {str(e)}"
+        }
+    
+    # Test Spotify API
+    try:
+        logger.info("Testing Spotify API")
+        client_id = os.environ.get("CLIENT_ID")
+        client_secret = os.environ.get("CLIENT_SECERET")
+        
+        if not client_id or not client_secret:
+            results["tests"]["spotify_api"] = {
+                "status": "warning",
+                "message": "Spotify API credentials not found in environment variables"
+            }
+        else:
+            # Test the authentication
+            token_url = "https://accounts.spotify.com/api/token"
+            auth_bytes = f"{client_id}:{client_secret}".encode('ascii')
+            auth_header = f"Basic {base64.b64encode(auth_bytes).decode('ascii')}"
+            
+            token_headers = {
+                "Authorization": auth_header,
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+            token_data = "grant_type=client_credentials"
+            
+            # Create a request for the token
+            token_req = urllib.request.Request(
+                token_url, 
+                data=token_data.encode('ascii'),
+                headers=token_headers
+            )
+            
+            with urllib.request.urlopen(token_req) as token_response:
+                token_data = json.loads(token_response.read().decode('utf-8'))
+                if 'access_token' in token_data:
+                    results["tests"]["spotify_api"] = {
+                        "status": "operational",
+                        "message": "Successfully authenticated with Spotify API"
+                    }
+                else:
+                    results["tests"]["spotify_api"] = {
+                        "status": "error",
+                        "message": "Failed to get access token from Spotify API"
+                    }
+    except Exception as e:
+        logger.error(f"Spotify API test failed: {str(e)}", exc_info=True)
+        results["tests"]["spotify_api"] = {
+            "status": "error",
+            "message": f"Error testing Spotify API: {str(e)}"
+        }
+    
+    # Test geocoding API
+    try:
+        logger.info("Testing Geocoding API")
+        geocode_url = "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=28.5383&longitude=-81.3792&localityLanguage=en"
+        geo_data = fetch_json_data(geocode_url)
+        
+        if geo_data:
+            city = geo_data.get("city", "Unknown")
+            region = geo_data.get("principalSubdivision", "Unknown")
+            results["tests"]["geocoding_api"] = {
+                "status": "operational",
+                "message": f"Successfully geocoded location: {city}, {region}"
+            }
+        else:
+            results["tests"]["geocoding_api"] = {
+                "status": "error",
+                "message": "Failed to fetch data from geocoding API"
+            }
+    except Exception as e:
+        logger.error(f"Geocoding API test failed: {str(e)}", exc_info=True)
+        results["tests"]["geocoding_api"] = {
+            "status": "error",
+            "message": f"Error testing geocoding API: {str(e)}"
+        }
+    
+    # Overall status check
+    if any(test["status"] == "error" for test in results["tests"].values()):
+        results["app_status"] = "degraded"
+    
+    return jsonify(results)
 
 # For debugging purposes
 @app.route("/debug-env")
