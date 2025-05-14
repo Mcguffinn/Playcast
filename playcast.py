@@ -474,4 +474,4 @@ def debug_weather():
         return {"error": str(e)}, 500
     
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=app.debug, port=int(os.environ.get("PORT", 5000)))

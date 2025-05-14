@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/minimal.py",
+      "use": "@vercel/python",
+      "config": {
+        "installCommand": "pip install -r vercel-requirements.txt"
+      }
+    },
+    {
+      "src": "static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/minimal.py"
+    }
+  ],
+  "env": {
+    "PYTHONUNBUFFERED": "1",
+    "FLASK_ENV": "production"
+  }
+} 

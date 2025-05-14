@@ -1,0 +1,32 @@
+# Environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Git
+.git/
+.gitignore
+
+# VSCode
+.vscode/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# cache directories
+.cache/
+
+# Temp files
+trash/
+
+# Development files
+clean_requirements.py
+
+# Local development env files
+.env.local
+.env.development
+.env.development.local 
